@@ -1,0 +1,10 @@
+可能用到的技术：
+    基础框架：
+        springboot + mysql
+    接口：
+        swagger
+    其他：|
+        redis
+        mq
+        security
+
