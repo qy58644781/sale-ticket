@@ -1,6 +1,5 @@
 package com.yadan.saleticket.model;
 
-
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,12 +9,12 @@ import org.hibernate.annotations.Where;
 import javax.persistence.Entity;
 
 /**
- * 订单
+ * 订单明细
  */
 @Entity
 @Getter
 @Setter
 @Where(clause = "is_deleted=0")
-@SQLDelete(sql = "update yd_st_order set is_deleted=1,update_time=now() where id=?")
-public class Order extends BaseModel {
+@SQLDelete(sql = "update yd_st_OrderDetail set is_deleted=1,update_time=now() where id=?")
+public class OrderDetail extends BaseModel {
 }

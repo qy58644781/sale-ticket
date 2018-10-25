@@ -1,8 +1,6 @@
 package com.yadan.saleticket.controller;
 
 
-import com.yadan.saleticket.base.http.STResponse;
-import com.yadan.saleticket.base.http.handler.JSONFilter;
 import com.yadan.saleticket.dao.UserRepository;
 import com.yadan.saleticket.enums.Sex;
 import com.yadan.saleticket.model.User;
@@ -27,12 +25,12 @@ public class TestController {
 
 
     @RequestMapping("/updateUser")
-    public void updateUser(){
+    public void updateUser() {
 //        User user = userRepository.findUserByMobile("123456");
 //        user.setNickname(null);
 //        user.setNickname("heihei");
 //        user.setSex(Sex.FEMALE);
-        User user =new User();
+        User user = new User();
         user.setId(3L);
         user.setSex(Sex.FEMALE);
         userRepository.merge(user);

@@ -4,9 +4,6 @@ import com.yadan.saleticket.enums.Sex;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -14,9 +11,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-@ToString
-@DynamicInsert
-@DynamicUpdate
 @Entity
 @Getter
 @Setter

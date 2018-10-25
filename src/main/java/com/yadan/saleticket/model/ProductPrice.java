@@ -1,6 +1,5 @@
 package com.yadan.saleticket.model;
 
-
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,11 +7,13 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 
 /**
- * 商品
+ * 商品价格
  */
 @Audited
 @Entity
@@ -20,16 +21,26 @@ import javax.persistence.Entity;
 @Setter
 @Where(clause = "is_deleted=0")
 @SQLDelete(sql = "update yd_st_product set is_deleted=1,update_time=now() where id=?")
-public class Product extends BaseModel {
+public class ProductPrice extends BaseModel {
 
     /**
-     * 名称
+     * 几排
      */
-    private String name;
+    private Integer row;
 
     /**
-     * 详情
+     * 价格
      */
-    @Column(columnDefinition = "text")
-    private String description;
+    private BigDecimal price;
+
+    /**
+     * 上映时间
+     */
+    private LocalDateTime startTime;
+
+    /**
+     * 结束时间
+     */
+    private LocalDateTime endTime;
+
 }
