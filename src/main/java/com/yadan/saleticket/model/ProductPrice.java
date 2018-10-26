@@ -24,14 +24,14 @@ import java.time.LocalDateTime;
 public class ProductPrice extends BaseModel {
 
     /**
-     * 几排
+     * 演出场次
      */
-    private Integer row;
+    private Integer times;
 
     /**
-     * 价格
+     * 库存
      */
-    private BigDecimal price;
+    private Integer inventory;
 
     /**
      * 上映时间
@@ -42,5 +42,30 @@ public class ProductPrice extends BaseModel {
      * 结束时间
      */
     private LocalDateTime endTime;
+
+    /**
+     * 第几排开始
+     */
+    private Integer rowFrom;
+
+    /**
+     * 第几排结束
+     */
+    private Integer rowEnd;
+
+    /**
+     * 价格
+     */
+    private BigDecimal price;
+
+    /**
+     * 演出厅id
+     */
+    private Long hallId;
+
+    /**
+     * 所属产品Id
+     */
+    private Long productId;
 
 }

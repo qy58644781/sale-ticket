@@ -2,7 +2,7 @@ package com.yadan.saleticket.controller;
 
 
 import com.yadan.saleticket.dao.UserRepository;
-import com.yadan.saleticket.enums.Sex;
+import com.yadan.saleticket.enums.SexEnum;
 import com.yadan.saleticket.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ public class TestController {
         User u = new User();
         u.setMobile("123456");
         u.setNickname("nico");
-        u.setSex(Sex.MALE);
+        u.setSexEnum(SexEnum.MALE);
         userRepository.merge(u);
     }
 
@@ -32,7 +32,7 @@ public class TestController {
 //        user.setSex(Sex.FEMALE);
         User user = new User();
         user.setId(3L);
-        user.setSex(Sex.FEMALE);
+        user.setSexEnum(SexEnum.FEMALE);
         userRepository.merge(user);
 //        userRepository.dynamicSave(user.getId(), user);
 //        System.out.println(user);
@@ -42,5 +42,12 @@ public class TestController {
     public User user() {
         User user = userRepository.findOne(3L);
         return user;
+    }
+
+    public static void main(String[] args) {
+        String site = "{[2,0,0,3],\n" +
+                "[2,0,0,3],\n" +
+                "[2,0,0,3],\n" +
+                "[7]}";
     }
 }

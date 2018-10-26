@@ -17,7 +17,6 @@ import java.util.*;
 @Component
 @Slf4j
 public class ProcessRequest {
-    private final Locale DEFAULT_LANG = Locale.SIMPLIFIED_CHINESE;
 //    @Autowired
 //    private SecurityService securityService;
 

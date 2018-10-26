@@ -1,7 +1,7 @@
 package com.yadan.saleticket.model;
 
 
-import com.yadan.saleticket.enums.TicketStatus;
+import com.yadan.saleticket.enums.TicketStatusEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,14 +32,40 @@ public class Ticket extends BaseModel {
      * 票状态
      */
     @Enumerated(EnumType.STRING)
-    private TicketStatus ticketStatus;
+    private TicketStatusEnum ticketStatusEnum;
 
     /**
      * 价格
      */
     private BigDecimal price;
 
+    /**
+     * 开始时间
+     */
     private LocalDateTime startTime;
 
+    /**
+     * 结束时间
+     */
     private LocalDateTime endTime;
+
+    /**
+     * 排
+     */
+    private Integer row;
+
+    /**
+     * 座
+     */
+    private Integer col;
+
+    /**
+     * 产品价格外键
+     */
+    private Long productPriceId;
+
+    /**
+     * 产品外键
+     */
+    private Long productId;
 }

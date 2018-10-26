@@ -1,6 +1,6 @@
 package com.yadan.saleticket.enums;
 
-public enum  TicketStatus {
+public enum TicketStatusEnum {
     /**
      * 有效的票
      */
@@ -17,7 +17,7 @@ public enum  TicketStatus {
     SAILED,
 
     /**
-     * 无效
+     * 无效 （座位损坏被下架，该座位不进行售卖等）
      */
     INVALID
 

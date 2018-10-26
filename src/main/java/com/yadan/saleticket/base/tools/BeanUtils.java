@@ -6,7 +6,7 @@ import org.springframework.beans.BeanWrapperImpl;
 import java.beans.FeatureDescriptor;
 import java.util.stream.Stream;
 
-public class BeanUtils extends org.springframework.beans.BeanUtils{
+public class BeanUtils extends org.springframework.beans.BeanUtils {
     public static void copyNotNullProperties(Object source, Object dest) {
         org.springframework.beans.BeanUtils.copyProperties(source, dest, getNullPropertyNames(source));
     }

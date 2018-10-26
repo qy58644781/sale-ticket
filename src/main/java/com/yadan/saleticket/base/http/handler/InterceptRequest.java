@@ -1,6 +1,7 @@
 package com.yadan.saleticket.base.http.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.BasicErrorController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -29,10 +30,10 @@ public class InterceptRequest extends WebMvcConfigurerAdapter {
         return new HandlerInterceptorAdapter() {
 
             public boolean isSupport(Object handler) {
-                if (handler instanceof HandlerMethod) {
-                    return true;
+                if (((HandlerMethod) handler).getBean() instanceof BasicErrorController) {
+                    return false;
                 }
-                return false;
+                return true;
             }
 
             @Override

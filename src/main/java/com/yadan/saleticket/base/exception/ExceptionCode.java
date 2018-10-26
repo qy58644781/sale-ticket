@@ -7,9 +7,7 @@ public enum ExceptionCode {
     SYSTEM(1003),
     SERVICE(1004),
     NO_HANDLER(1005),
-    JSON_CONVERT_EXCEPTION(1006),
-
-    ;
+    JSON_CONVERT_EXCEPTION(1006),;
 
     private int codeNumber;
 

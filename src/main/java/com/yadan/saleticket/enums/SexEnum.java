@@ -1,5 +1,5 @@
 package com.yadan.saleticket.enums;
 
-public enum Sex {
+public enum SexEnum {
     MALE, FEMALE
 }

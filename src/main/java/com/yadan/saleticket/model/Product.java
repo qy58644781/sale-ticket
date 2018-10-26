@@ -32,4 +32,6 @@ public class Product extends BaseModel {
      */
     @Column(columnDefinition = "text")
     private String description;
+
+
 }

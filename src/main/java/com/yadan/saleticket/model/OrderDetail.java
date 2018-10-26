@@ -7,6 +7,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Entity;
+import java.math.BigDecimal;
 
 /**
  * 订单明细
@@ -17,4 +18,26 @@ import javax.persistence.Entity;
 @Where(clause = "is_deleted=0")
 @SQLDelete(sql = "update yd_st_OrderDetail set is_deleted=1,update_time=now() where id=?")
 public class OrderDetail extends BaseModel {
+
+    /**
+     * 原价
+     */
+    private BigDecimal originPrice;
+
+    /**
+     * 现价
+     */
+    private BigDecimal price;
+
+    /**
+     * 订单外键
+     */
+    private Long orderId;
+
+    /**
+     * 票外键
+     */
+    private Long ticketId;
+
+
 }
