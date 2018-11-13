@@ -6,4 +6,6 @@ import com.yadan.saleticket.model.User;
 public interface UserRepository extends ExtJpaRepository<User, Long> {
 
     User findUserByMobile(String mobile);
+
+    User findUserByMobileAndPassword(String mobile, String password);
 }
