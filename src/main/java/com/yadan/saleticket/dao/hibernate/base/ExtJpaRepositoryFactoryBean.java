@@ -1,4 +1,4 @@
-package com.yadan.saleticket.dao.base;
+package com.yadan.saleticket.dao.hibernate.base;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;

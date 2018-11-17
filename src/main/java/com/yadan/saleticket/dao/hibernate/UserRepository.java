@@ -1,7 +1,7 @@
-package com.yadan.saleticket.dao;
+package com.yadan.saleticket.dao.hibernate;
 
-import com.yadan.saleticket.dao.base.ExtJpaRepository;
-import com.yadan.saleticket.model.User;
+import com.yadan.saleticket.dao.hibernate.base.ExtJpaRepository;
+import com.yadan.saleticket.model.user.User;
 
 public interface UserRepository extends ExtJpaRepository<User, Long> {
 

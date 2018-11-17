@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model;
+package com.yadan.saleticket.model.Order;
 
 
 import com.yadan.saleticket.enums.OrderStatusEnum;

@@ -1,6 +1,6 @@
 package com.yadan.saleticket.base.security;
 
-import com.yadan.saleticket.model.User;
+import com.yadan.saleticket.model.user.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

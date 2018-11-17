@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class BeanInit {
+public class SecurityBeanInit {
 
     /**
      * 用于解析rememberMe的服务类

@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model;
+package com.yadan.saleticket.model.user;
 
 import com.yadan.saleticket.enums.SexEnum;
 import com.yadan.saleticket.model.base.BaseModel;

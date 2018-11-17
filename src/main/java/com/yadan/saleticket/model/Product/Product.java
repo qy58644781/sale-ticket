@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model;
+package com.yadan.saleticket.model.Product;
 
 
 import com.yadan.saleticket.model.base.BaseModel;
@@ -32,6 +32,16 @@ public class Product extends BaseModel {
      */
     @Column(columnDefinition = "text")
     private String description;
+
+    /**
+     * 产品海报图
+     */
+    private String pic;
+
+    /**
+     * 产品视频
+     */
+    private String video;
 
 
 }

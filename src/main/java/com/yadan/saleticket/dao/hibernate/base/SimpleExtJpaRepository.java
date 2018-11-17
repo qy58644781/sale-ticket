@@ -1,4 +1,4 @@
-package com.yadan.saleticket.dao.base;
+package com.yadan.saleticket.dao.hibernate.base;
 
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.extern.slf4j.Slf4j;
@@ -73,15 +73,6 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
         return t;
     }
 
-    @Override
-    public void remove(T t) {
-        if (em.contains(t)) {
-            delete(t);
-        } else {
-            Object o = this.findOne(t.getId());
-            em.remove(o);
-        }
-    }
 
     /**
      * 扩展持久方法

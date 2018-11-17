@@ -1,10 +1,12 @@
 package com.yadan.saleticket.base.security;
 
-import com.yadan.saleticket.model.User;
+import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.service.UserLoginTokenLogService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 
@@ -18,7 +20,7 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
     protected final String HEADER_SECURITY_TOKEN = "HEADER_SECURITY_TOKEN";
 
     @Autowired
-    private SecurityService securityService;
+    private UserLoginTokenLogService userLoginTokenLogService;
 
     @Override
     @Value("true")
@@ -38,23 +40,24 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
     }
 
     @Override
-    protected boolean isTokenExpired(long tokenExpiryTime) {
-        return false;
-    }
-
-    @Override
     protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
         String cookieValue = encodeCookie(tokens);
         response.setHeader(HEADER_SECURITY_TOKEN, cookieValue);
     }
 
+    /**
+     * token 生成
+     *
+     * @param request
+     * @param response
+     * @param successfulAuthentication
+     */
     @Override
     public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response,
                                Authentication successfulAuthentication) {
         User user = ((User) ((AuthenticationUserWrapper) (successfulAuthentication.getPrincipal())).getUser());
         String username = user.getMobile();
-        String password = securityService.getCurrentLoginUser().getPassword();
-        //String password = user.getOpenId();
+        String password = user.getPassword();
 
         if (!org.springframework.util.StringUtils.hasLength(username)) {
             logger.debug("Unable to retrieve username");
@@ -67,7 +70,10 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
 
         String signatureValue = makeTokenSignature(expiryTime, username, password);
 
-        setCookie(new String[]{username, Long.toString(expiryTime), signatureValue}, tokenLifetime, request, response);
+        String[] tokens = new String[]{username, Long.toString(expiryTime), signatureValue};
+        setCookie(tokens, tokenLifetime, request, response);
+
+        userLoginTokenLogService.saveValidToken(user.getId(), encodeCookie(tokens));
 
         if (logger.isDebugEnabled()) {
             logger.debug("Added remember-me cookie for user '" + username + "', expiry: '"
@@ -75,26 +81,22 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
         }
     }
 
-    public void genOdmToken(HttpServletRequest request, HttpServletResponse response, String username, String password) {
+    /**
+     * token 验证
+     *
+     * @param cookieTokens
+     * @param request
+     * @param response
+     * @return
+     */
+    @Override
+    protected UserDetails processAutoLoginCookie(String[] cookieTokens,
+                                                 HttpServletRequest request, HttpServletResponse response) {
+        AuthenticationUserWrapper<User> userDetails = (AuthenticationUserWrapper) (super.processAutoLoginCookie(cookieTokens, request, response));
 
-        if (!org.springframework.util.StringUtils.hasLength(username)) {
-            logger.debug("Unable to retrieve username");
-            return;
-        }
+        userLoginTokenLogService.checkValidToken(userDetails.getUser().getId(), encodeCookie(cookieTokens));
 
-
-        long expiryTime = System.currentTimeMillis();
-        expiryTime += 1000L * TWO_WEEKS_S;
-
-        String signatureValue = makeTokenSignature(expiryTime, username, password);
-
-        setCookie(new String[]{username, Long.toString(expiryTime), signatureValue}, 0, request, response);
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("Added remember-me cookie for user '" + username + "', expiry: '"
-                    + new Date(expiryTime) + "'");
-        }
-
+        return userDetails;
     }
 
 }

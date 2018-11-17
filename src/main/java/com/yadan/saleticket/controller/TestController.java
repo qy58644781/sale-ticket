@@ -1,10 +1,9 @@
 package com.yadan.saleticket.controller;
 
 
-import com.yadan.saleticket.dao.UserRepository;
+import com.yadan.saleticket.dao.hibernate.UserRepository;
 import com.yadan.saleticket.enums.SexEnum;
-import com.yadan.saleticket.model.User;
-import org.apache.commons.collections.CollectionUtils;
+import com.yadan.saleticket.model.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

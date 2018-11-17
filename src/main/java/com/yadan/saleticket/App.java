@@ -1,6 +1,6 @@
 package com.yadan.saleticket;
 
-import com.yadan.saleticket.dao.base.ExtJpaRepositoryFactoryBean;
+import com.yadan.saleticket.dao.hibernate.base.ExtJpaRepositoryFactoryBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;

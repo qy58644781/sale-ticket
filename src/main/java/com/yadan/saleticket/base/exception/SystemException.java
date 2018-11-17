@@ -6,6 +6,10 @@ public class SystemException extends GlobalException {
         super(ExceptionCode.SYSTEM, "服务器错误");
     }
 
+    public SystemException(String msg) {
+        super(ExceptionCode.SYSTEM, msg);
+    }
+
     public SystemException(ExceptionCode code, String message) {
         super(code, message);
     }

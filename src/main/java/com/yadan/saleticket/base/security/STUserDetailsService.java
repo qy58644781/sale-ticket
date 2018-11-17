@@ -1,7 +1,7 @@
 package com.yadan.saleticket.base.security;
 
-import com.yadan.saleticket.dao.UserRepository;
-import com.yadan.saleticket.model.User;
+import com.yadan.saleticket.dao.hibernate.UserRepository;
+import com.yadan.saleticket.model.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;

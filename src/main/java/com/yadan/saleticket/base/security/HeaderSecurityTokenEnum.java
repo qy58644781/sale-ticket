@@ -1,5 +1,7 @@
 package com.yadan.saleticket.base.security;
 
+import com.yadan.saleticket.base.exception.ExceptionCode;
+import com.yadan.saleticket.base.exception.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;
@@ -21,7 +23,7 @@ public enum HeaderSecurityTokenEnum {
     // todo 优化逻辑
     public static HeaderSecurityTokenEnum getPathEnum(String path) {
         if (StringUtils.isEmpty(path))
-            return null;
+            throw new ServiceException(ExceptionCode.SYSTEM, "错误的url");
 
         final String app = "^/app/.+$";
         final String admin = "^/admin/.+$";
@@ -31,6 +33,6 @@ public enum HeaderSecurityTokenEnum {
         else if (Pattern.matches(admin, path))
             return ST_ADMIN;
         else
-            return null;
+            throw new ServiceException(ExceptionCode.SYSTEM, "错误的url");
     }
 }
