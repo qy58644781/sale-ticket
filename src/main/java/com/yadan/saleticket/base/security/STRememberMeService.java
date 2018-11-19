@@ -56,6 +56,20 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
     public void onLoginSuccess(HttpServletRequest request, HttpServletResponse response,
                                Authentication successfulAuthentication) {
         User user = ((User) ((AuthenticationUserWrapper) (successfulAuthentication.getPrincipal())).getUser());
+        int tokenLifetime = calculateLoginLifetime(request, successfulAuthentication);
+        this.createToken(request, response, user, tokenLifetime);
+
+    }
+
+    /**
+     * 判断用户账号密码正确以后 生成token
+     * @param request
+     * @param response
+     * @param user
+     * @param tokenLifetime
+     */
+    public void createToken(HttpServletRequest request, HttpServletResponse response,
+                            User user, int tokenLifetime) {
         String username = user.getMobile();
         String password = user.getPassword();
 
@@ -64,7 +78,6 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
             return;
         }
 
-        int tokenLifetime = calculateLoginLifetime(request, successfulAuthentication);
         long expiryTime = System.currentTimeMillis();
         expiryTime += 1000L * (tokenLifetime < 0 ? TWO_WEEKS_S : tokenLifetime);
 

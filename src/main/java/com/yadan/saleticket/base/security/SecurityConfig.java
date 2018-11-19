@@ -53,7 +53,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.authorizeRequests()
                 .accessDecisionManager(stDecisionManager())
-                .antMatchers("/auth/**", "/app/**/open/**", "/admin/**/open/**").permitAll()
+                .antMatchers(
+                        "/auth/**",
+                        "/app/auth/**",
+                        "/admin/auth/**",
+                        "/app/**/open/**",
+                        "/admin/**/open/**").permitAll()
                 .antMatchers("/app/**").access("hasRole('ST_MEMBER')")
                 .antMatchers("/admin/**").access("hasRole('ST_ADMIN')")
                 .anyRequest().permitAll()
