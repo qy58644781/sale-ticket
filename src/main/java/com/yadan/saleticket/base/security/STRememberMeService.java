@@ -86,7 +86,8 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
         String[] tokens = new String[]{username, Long.toString(expiryTime), signatureValue};
         setCookie(tokens, tokenLifetime, request, response);
 
-        userLoginTokenLogService.saveValidToken(user.getId(), encodeCookie(tokens));
+        HeaderSecurityTokenEnum tokenType = HeaderSecurityTokenEnum.getPathEnum(request.getServletPath());
+        userLoginTokenLogService.saveValidToken(user, encodeCookie(tokens), tokenType);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Added remember-me cookie for user '" + username + "', expiry: '"
@@ -107,7 +108,8 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
                                                  HttpServletRequest request, HttpServletResponse response) {
         AuthenticationUserWrapper<User> userDetails = (AuthenticationUserWrapper) (super.processAutoLoginCookie(cookieTokens, request, response));
 
-        userLoginTokenLogService.checkValidToken(userDetails.getUser().getId(), encodeCookie(cookieTokens));
+        HeaderSecurityTokenEnum tokenType = HeaderSecurityTokenEnum.getPathEnum(request.getServletPath());
+        userLoginTokenLogService.checkValidToken(userDetails.getUser(), encodeCookie(cookieTokens), tokenType);
 
         return userDetails;
     }

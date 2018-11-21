@@ -59,7 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/admin/auth/**",
                         "/app/**/open/**",
                         "/admin/**/open/**").permitAll()
-                .antMatchers("/app/**").access("hasRole('ST_MEMBER')")
+                .antMatchers("/app/**").access("hasRole('ST_APP')")
                 .antMatchers("/admin/**").access("hasRole('ST_ADMIN')")
                 .anyRequest().permitAll()
 

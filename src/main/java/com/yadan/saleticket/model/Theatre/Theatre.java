@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model;
+package com.yadan.saleticket.model.Theatre;
 
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
@@ -23,8 +23,4 @@ public class Theatre extends BaseModel {
      */
     private String name;
 
-    /**
-     * 地区外键
-     */
-    private Long areaId;
 }

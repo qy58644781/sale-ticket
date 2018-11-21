@@ -2,7 +2,9 @@ package com.yadan.saleticket.service;
 
 import com.yadan.saleticket.base.exception.ExceptionCode;
 import com.yadan.saleticket.base.exception.ServiceException;
+import com.yadan.saleticket.base.security.HeaderSecurityTokenEnum;
 import com.yadan.saleticket.dao.hibernate.UserLoginTokenLogRepository;
+import com.yadan.saleticket.model.user.User;
 import com.yadan.saleticket.model.user.UserLoginTokenLog;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,28 +22,30 @@ public class UserLoginTokenLogService {
     /**
      * 保存一条最新的token，将其他token失效
      *
-     * @param userId
+     * @param user
      * @param token
      */
     @Transactional
-    public void saveValidToken(Long userId, String token) {
+    public void saveValidToken(User user, String token, HeaderSecurityTokenEnum tokenType) {
         // token 入库，作为单点登录依据
-        userLoginTokenLogRepository.findAllByUserId(userId)
+        userLoginTokenLogRepository.findAllByUserAndTokenType(user, tokenType)
                 .forEach(each -> userLoginTokenLogRepository.delete(each));
+
         UserLoginTokenLog log = new UserLoginTokenLog();
-        log.setUserId(userId);
+        log.setUser(user);
         log.setHeaderSecurityToken(token);
+        log.setTokenType(tokenType);
         userLoginTokenLogRepository.save(log);
     }
 
     /**
      * 验证cookie中的token是否为最新的那条token
      *
-     * @param userId
+     * @param user
      * @param cookieToken
      */
-    public void checkValidToken(Long userId, String cookieToken) {
-        List<UserLoginTokenLog> logs = userLoginTokenLogRepository.findAllByUserId(userId);
+    public void checkValidToken(User user, String cookieToken, HeaderSecurityTokenEnum tokenType) {
+        List<UserLoginTokenLog> logs = userLoginTokenLogRepository.findAllByUserAndTokenType(user, tokenType);
         // 单点登录依据：判断当前token是否为最新的token，并且与最新的token值相等
         if (CollectionUtils.isEmpty(logs)
                 || logs.size() > 1

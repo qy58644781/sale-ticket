@@ -1,5 +1,6 @@
 package com.yadan.saleticket.model.Product;
 
+import com.yadan.saleticket.model.Theatre.Seat;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,9 +8,10 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -23,49 +25,40 @@ import java.time.LocalDateTime;
 @SQLDelete(sql = "update yd_st_product set is_deleted=1,update_time=now() where id=?")
 public class ProductPrice extends BaseModel {
 
-    /**
-     * 演出场次
-     */
-    private Integer times;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_detail_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    private ProductDetail productDetail;
 
     /**
-     * 库存
+     * 库存（非在线选座的时候是手动输入，在线选择是根据座位求和）
      */
     private Integer inventory;
 
     /**
-     * 上映时间
+     * 从第几排开始
+     * 用于（非在线选座）
      */
-    private LocalDateTime startTime;
+    private Integer seatFrom;
 
     /**
-     * 结束时间
+     * 到第几排结束
+     * 用于（非在线选座）
      */
-    private LocalDateTime endTime;
+    private Integer seatTo;
 
     /**
-     * 第几排开始
+     * 座位
+     * 用于（在线选座）
      */
-    private Integer rowFrom;
-
-    /**
-     * 第几排结束
-     */
-    private Integer rowEnd;
+    @OneToMany
+    @JoinTable(name = "product_price_seat_ref",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT),
+            joinColumns = {@JoinColumn(name = "product_price_id")},
+            inverseJoinColumns = {@JoinColumn(name = "seat_id")})
+    private List<Seat> seats;
 
     /**
      * 价格
      */
     private BigDecimal price;
-
-    /**
-     * 演出厅id
-     */
-    private Long hallId;
-
-    /**
-     * 所属产品Id
-     */
-    private Long productId;
 
 }

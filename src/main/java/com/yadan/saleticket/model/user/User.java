@@ -7,9 +7,8 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -38,4 +37,5 @@ public class User extends BaseModel {
      */
     @Enumerated(EnumType.STRING)
     private SexEnum sexEnum;
+
 }

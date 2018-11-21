@@ -11,9 +11,9 @@ import java.util.regex.Pattern;
  */
 public enum HeaderSecurityTokenEnum {
     /**
-     * 会员
+     * 手机端
      */
-    ST_MEMBER,
+    ST_APP,
 
     /**
      * 后台管理员
@@ -29,7 +29,7 @@ public enum HeaderSecurityTokenEnum {
         final String admin = "^/admin/.+$";
 
         if (Pattern.matches(app, path))
-            return ST_MEMBER;
+            return ST_APP;
         else if (Pattern.matches(admin, path))
             return ST_ADMIN;
         else

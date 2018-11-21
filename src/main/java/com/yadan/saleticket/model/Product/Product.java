@@ -43,5 +43,10 @@ public class Product extends BaseModel {
      */
     private String video;
 
+    /**
+     * 演出时长（分钟）
+     */
+    private Integer length;
+
 
 }
