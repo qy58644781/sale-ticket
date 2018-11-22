@@ -14,6 +14,7 @@ public enum ExceptionCode {
     MOBILEFORMATERROR(2001),
     INVALID_CODE(2002),
     INVALID_USER(2003),
+    INVALID_EXCEL_DATA(2004),
 
     ;
     private int codeNumber;

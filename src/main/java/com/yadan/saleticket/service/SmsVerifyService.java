@@ -5,7 +5,7 @@ import com.yadan.saleticket.base.exception.ServiceException;
 import com.yadan.saleticket.base.tools.CommonUtils;
 import com.yadan.saleticket.dao.hibernate.SmsVerifyRepository;
 import com.yadan.saleticket.model.user.SmsVerify;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

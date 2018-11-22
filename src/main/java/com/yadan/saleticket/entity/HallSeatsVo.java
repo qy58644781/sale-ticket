@@ -10,7 +10,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class HallSeatVo {
+public class HallSeatsVo {
     private Long theatreId;
     private Long hallId;
 

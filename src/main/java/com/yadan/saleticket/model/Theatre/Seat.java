@@ -29,12 +29,12 @@ public class Seat extends BaseModel {
     /**
      * 对应x轴
      */
-    private Integer row;
+    private Integer seatRow;
 
     /**
      * 对应y轴
      */
-    private Integer column;
+    private Integer seatColumn;
 
     /**
      * 是否可用

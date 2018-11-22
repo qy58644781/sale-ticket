@@ -8,6 +8,7 @@ import com.yadan.saleticket.model.user.User;
 import com.yadan.saleticket.service.AppUserService;
 import com.yadan.saleticket.service.SmsVerifyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +37,7 @@ public class AppAuthController {
      * @param mobile
      * @param password
      */
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public void login(HttpServletRequest request,
                       HttpServletResponse response,
                       String mobile, String password) {
@@ -50,7 +51,7 @@ public class AppAuthController {
     /**
      * 发送短信验证码
      */
-    @RequestMapping("/sendSms")
+    @PostMapping("/sendSms")
     public String sendSms(String mobile) {
         // todo 为了测试方便返回code，后续不能返回
         String code = smsVerifyService.sendSmsVerify(mobile);
@@ -63,7 +64,7 @@ public class AppAuthController {
      * @param mobile
      * @param code
      */
-    @RequestMapping("/loginBySms")
+    @PostMapping("/loginBySms")
     public void loginBySms(HttpServletRequest request,
                            HttpServletResponse response,
                            String mobile, String code) {

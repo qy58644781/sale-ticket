@@ -52,12 +52,12 @@ public class Ticket extends BaseModel {
     /**
      * 排
      */
-    private Integer row;
+    private Integer seatRow;
 
     /**
      * 座
      */
-    private Integer col;
+    private Integer seatColumn;
 
     /**
      * 产品价格外键

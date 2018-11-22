@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -50,6 +51,7 @@ public class ProductPrice extends BaseModel {
      * 座位
      * 用于（在线选座）
      */
+    @NotAudited
     @OneToMany
     @JoinTable(name = "product_price_seat_ref",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT),
             joinColumns = {@JoinColumn(name = "product_price_id")},
