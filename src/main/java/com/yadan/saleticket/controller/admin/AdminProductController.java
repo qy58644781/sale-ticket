@@ -1,41 +1,58 @@
 package com.yadan.saleticket.controller.admin;
 
-import com.yadan.saleticket.dao.hibernate.UserLoginTokenLogRepository;
-import com.yadan.saleticket.dao.hibernate.UserRepository;
-import com.yadan.saleticket.model.user.User;
-import com.yadan.saleticket.model.user.UserLoginTokenLog;
-import com.yadan.saleticket.service.HallSeatService;
-import com.yadan.saleticket.service.SmsService;
+import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
+import com.yadan.saleticket.entity.AddProductVo;
+import com.yadan.saleticket.enums.SexEnum;
+import com.yadan.saleticket.enums.TicketTypeEnum;
+import com.yadan.saleticket.model.Product.Product;
+import com.yadan.saleticket.model.Theatre.Hall;
+import com.yadan.saleticket.service.ProductService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 @RestController
 @RequestMapping("/admin/product")
 public class AdminProductController {
 
     @Autowired
-    private UserLoginTokenLogRepository userLoginTokenLogRepository;
+    private ProductService productService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private SmsService smsService;
-
-    @Autowired
-    private HallSeatService hallSeatService;
-
-    @RequestMapping("/open/test1")
-    public String test() {
-//        RedisHelper.writeValue("1", 123);
-//        smsService.sendSms("86", "13816978323", "123");
-
-        return "i am open";
+    @GetMapping("")
+    public Page<Product> products(STPageRequest pageRequest, String filter) {
+        return null;
     }
 
-    @RequestMapping("/test2")
-    public String test2() {
-        return "i am not open";
+    @GetMapping("/{id}")
+    public Product product(@PathVariable("id") Long id) {
+        return null;
+    }
+
+    @PostMapping("/merge")
+    public Product merge(@RequestBody AddProductVo vo) {
+        return productService.createProduct(vo);
+    }
+
+    @GetMapping("/ticketTypeEnum")
+    public List<Map> hallEnums() {
+        List<Map> result = new ArrayList<>();
+        for (TicketTypeEnum each : TicketTypeEnum.values()) {
+            Map map = new HashMap();
+            map.put("id", each);
+            map.put("name", each.getVal());
+            result.add(map);
+        }
+        return result;
+    }
+
+    @PostMapping("/delete")
+    @Transactional
+    public Set<Long> delete(String ids) {
+        Set<Long> result = new HashSet<>();
+        return result;
     }
 }

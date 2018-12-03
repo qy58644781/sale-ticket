@@ -1,18 +1,22 @@
 <input id="file" name="file" type="file" value="上传文件">
-<input type="button" value="button3" onclick="doUrl('/sale-ticket/admin/theatre/open/hall/create')"/>
+<input type="button" value="button3" onclick="encodeBase64('/sale-ticket/admin/theatre/open/hall/create')"/>
+<input type="text" name="text1" id="text1" />
 
 <script>
     function doUrl(url) {
-        var fileObj = document.getElementById("file").files[0]; // js 获取文件对象
 
+        encodeBase64();
+        console.info(2);
+        console.info(3, document.getElementById("text1"));
+
+        var fileObj = document.getElementById("file").files[0]; // js 获取文件对象
         var form = new FormData(); // FormData 对象
-        form.append("file", fileObj); // 文件对象
+        form.append("file", ""); // 文件对象
 
         xhr = new XMLHttpRequest();  // XMLHttpRequest 对象
         xhr.open("post", url, true); //post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
         // xhr.onload = uploadComplete; //请求完成
         // xhr.onerror = uploadFailed; //请求失败
-
         // xhr.upload.onprogress = progressFunction;//【上传进度调用方法实现】
         // xhr.upload.onloadstart = function () {//上传开始执行方法
         //     ot = new Date().getTime();   //设置上传开始时间
@@ -20,6 +24,34 @@
         // };
 
         xhr.send(form); //开始上传，发送form数据
+
+    }
+
+    function encodeBase64() {
+        var test = '';
+        var blob = new Blob(["Hello, world!"], { type: 'text/plain' });
+        var blobUrl = URL.createObjectURL(blob);
+        var xhr = new XMLHttpRequest;
+        xhr.responseType = 'blob';
+        console.info(0);
+
+        xhr.onload = function() {
+            var recoveredBlob = xhr.response;
+
+            var reader = new FileReader;
+
+            reader.onload = function() {
+                var blobAsDataUrl = reader.result;
+                console.info(1, blobAsDataUrl);
+                window.location = blobAsDataUrl;
+            };
+
+            reader.readAsDataURL(recoveredBlob);
+        };
+
+        xhr.open('GET', blobUrl);
+        xhr.send();
+
 
     }
 

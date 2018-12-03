@@ -11,6 +11,7 @@ import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Audited
 @Entity
@@ -49,4 +50,5 @@ public class ProductDetail extends BaseModel {
      * 结束时间
      */
     private LocalDateTime endTime;
+
 }

@@ -1,10 +1,12 @@
 package com.yadan.saleticket.enums;
 
-public enum SexEnum {
-    MALE("男"), FEMALE("女"), UNKNOW("未知");
+public enum ApproveStausEnum {
+    TBD("待审核"),
+    PASSED("审核通过"),
+    UNPASSED("审核失败");
 
     private String val;
-    SexEnum(String val) {
+    ApproveStausEnum(String val) {
         this.val = val;
     }
 

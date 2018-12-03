@@ -1,5 +1,6 @@
 package com.yadan.saleticket.model.Product;
 
+import com.yadan.saleticket.enums.TicketTypeEnum;
 import com.yadan.saleticket.model.Theatre.Seat;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
@@ -48,6 +49,12 @@ public class ProductPrice extends BaseModel {
     private Integer seatTo;
 
     /**
+     * 区域名称
+     * 用于（非在线选座）
+     */
+    private String areaName;
+
+    /**
      * 座位
      * 用于（在线选座）
      */
@@ -62,5 +69,11 @@ public class ProductPrice extends BaseModel {
      * 价格
      */
     private BigDecimal price;
+
+    /**
+     * 票类型
+     */
+    @Enumerated(EnumType.STRING)
+    private TicketTypeEnum ticketTypeEnum;
 
 }

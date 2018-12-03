@@ -3,7 +3,10 @@ package com.yadan.saleticket.dao.hibernate.base;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.FatalBeanException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.provider.PersistenceProvider;
 import org.springframework.data.jpa.repository.support.CrudMethodMetadata;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -14,6 +17,7 @@ import org.springframework.util.ClassUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
+import javax.persistence.Query;
 import javax.persistence.Transient;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
@@ -71,6 +75,41 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
             t = saveAndFlush(t);
         }
         return t;
+    }
+
+    @Override
+    public Page findAllByFilterAndPageRequest(STPageRequest stPageRequest, Map<String, String> filter, Class<T> clazz) {
+        StringBuilder hql = new StringBuilder("from " + clazz.getSimpleName() + " c where 1=1 ");
+        for (Map.Entry<String, String> entry : filter.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (StringUtils.isNotEmpty(value)) {
+                hql.append("and c." + key + " like :" + key + " ");
+            }
+        }
+        if (StringUtils.isNotEmpty(stPageRequest.getSortField())
+                && stPageRequest.getSortOrder() != null) {
+            hql.append("order by " + stPageRequest.getSortField() + " " + stPageRequest.getSortOrder() + " ");
+        }
+
+        Query query = em.createQuery("select c " + hql);
+        Query total = em.createQuery("select count(1) " + hql);
+
+        for (Map.Entry<String, String> entry : filter.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (StringUtils.isNotEmpty(value)) {
+                query.setParameter(key, "%" + value + "%");
+                total.setParameter(key, "%" + value + "%");
+            }
+        }
+
+        if (stPageRequest.getPage() != null && stPageRequest.getCount() != null) {
+            query.setFirstResult((stPageRequest.getPage() - 1) * stPageRequest.getCount())
+                    .setMaxResults(stPageRequest.getCount());
+        }
+        return new PageImpl(query.getResultList(), stPageRequest.genPageRequest(), (Long) total.getSingleResult());
+
     }
 
 

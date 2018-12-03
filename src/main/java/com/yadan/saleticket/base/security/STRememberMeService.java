@@ -79,7 +79,8 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
         }
 
         long expiryTime = System.currentTimeMillis();
-        expiryTime += 1000L * (tokenLifetime < 0 ? TWO_WEEKS_S : tokenLifetime);
+//        expiryTime += 1000L * (tokenLifetime < 0 ? TWO_WEEKS_S : tokenLifetime);
+        expiryTime += 1000L * TWO_WEEKS_S;
 
         String signatureValue = makeTokenSignature(expiryTime, username, password);
 

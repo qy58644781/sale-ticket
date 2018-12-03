@@ -2,6 +2,7 @@ package com.yadan.saleticket.model.Order;
 
 
 import com.yadan.saleticket.enums.TicketStatusEnum;
+import com.yadan.saleticket.enums.TicketTypeEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,4 +69,7 @@ public class Ticket extends BaseModel {
      * 产品外键
      */
     private Long productId;
+
+    @Enumerated(EnumType.STRING)
+    private TicketTypeEnum ticketTypeEnum;
 }

@@ -1,6 +1,7 @@
 package com.yadan.saleticket.controller;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.yadan.saleticket.dao.hibernate.UserRepository;
 import com.yadan.saleticket.enums.SexEnum;
 import com.yadan.saleticket.model.user.User;
@@ -23,6 +24,17 @@ public class TestController {
         userRepository.merge(u);
     }
 
+    @RequestMapping("/job/notification")
+    public JSONObject test(String date, String name, Integer status, String key) {
+        System.out.println(date);
+        System.out.println(name);
+        System.out.println(status);
+        System.out.println(key);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("key", key);
+        jsonObject.put("createtime", "2011-01-01 11:11:11");
+        return jsonObject;
+    }
 
     @RequestMapping("/updateUser")
     public void updateUser() {
