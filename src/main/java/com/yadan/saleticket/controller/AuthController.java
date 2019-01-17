@@ -5,6 +5,8 @@ import com.yadan.saleticket.base.exception.ServiceException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 用于控制Spring Security登录页面
  */
@@ -23,7 +25,8 @@ public class AuthController {
     }
 
     @RequestMapping("/failure")
-    public String failure() {
+    public String failure(HttpServletResponse response) {
+        response.setStatus(401);
         return "failure";
     }
 

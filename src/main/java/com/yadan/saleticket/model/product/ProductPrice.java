@@ -1,34 +1,31 @@
-package com.yadan.saleticket.model.Product;
+package com.yadan.saleticket.model.product;
 
 import com.yadan.saleticket.enums.TicketTypeEnum;
-import com.yadan.saleticket.model.Theatre.Seat;
 import com.yadan.saleticket.model.base.BaseModel;
+import com.yadan.saleticket.model.theatre.Seat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
 /**
  * 商品价格
  */
-@Audited
 @Entity
 @Getter
 @Setter
 @Where(clause = "is_deleted=0")
-@SQLDelete(sql = "update yd_st_product set is_deleted=1,update_time=now() where id=?")
+@SQLDelete(sql = "update yd_st_product_price set is_deleted=1,update_time=now() where id=?")
 public class ProductPrice extends BaseModel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_detail_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "is_deleted=0")
     private ProductDetail productDetail;
 
     /**
@@ -58,7 +55,6 @@ public class ProductPrice extends BaseModel {
      * 座位
      * 用于（在线选座）
      */
-    @NotAudited
     @OneToMany
     @JoinTable(name = "product_price_seat_ref",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT),
             joinColumns = {@JoinColumn(name = "product_price_id")},

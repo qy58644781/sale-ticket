@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model.Order;
+package com.yadan.saleticket.model.order;
 
 import com.yadan.saleticket.enums.PayStatusEnum;
 import com.yadan.saleticket.enums.PaymentPlatformEnum;

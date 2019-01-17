@@ -1,7 +1,5 @@
 package com.yadan.saleticket.base.security;
 
-import com.yadan.saleticket.base.exception.ExceptionCode;
-import com.yadan.saleticket.base.exception.ServiceException;
 import com.yadan.saleticket.base.tools.MD5;
 import com.yadan.saleticket.dao.hibernate.UserRepository;
 import com.yadan.saleticket.model.user.User;
@@ -9,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,7 +32,8 @@ public class STAuthProvider implements AuthenticationProvider {
 
         User stUser = userRepository.findUserByMobileAndPassword(username, MD5.MD5Encode(password));
         if (stUser == null) {
-            throw new ServiceException(ExceptionCode.NO_PERMISSION, "用户账号或密码错误");
+//            throw new ServiceException(ExceptionCode.NO_PERMISSION, "用户账号或密码错误");
+            throw new BadCredentialsException("用户账号或密码错误");
         }
 
         UserDetails userDetails = this.getSTUserDetailsService().loadUserByUsername(username);

@@ -1,29 +1,34 @@
-package com.yadan.saleticket.model.Product;
+package com.yadan.saleticket.model.product;
 
 
-import com.yadan.saleticket.enums.ApproveStausEnum;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.yadan.saleticket.enums.ApproveStatusEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import com.yadan.saleticket.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * 商品
  */
-@Audited
 @Entity
 @Getter
 @Setter
 @Where(clause = "is_deleted=0")
 @SQLDelete(sql = "update yd_st_product set is_deleted=1,update_time=now() where id=?")
 public class Product extends BaseModel {
+
+    private Long id;
+
+    private LocalDateTime createTime;
+
+    private LocalDateTime updateTime;
 
     /**
      * 名称
@@ -59,30 +64,39 @@ public class Product extends BaseModel {
     /**
      * 审核状态
      */
-    private ApproveStausEnum approveStausEnum;
+    @Enumerated(EnumType.STRING)
+    private ApproveStatusEnum approveStatusEnum;
 
     /**
      * 创建人
      */
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creater", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Where(clause = "is_deleted=0")
     private User creater;
 
     /**
      * 修改人
      */
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updater", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Where(clause = "is_deleted=0")
     private User updater;
 
     /**
      * 审核人
      */
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approver", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Where(clause = "is_deleted=0")
     private User approver;
+
+    @OneToMany(mappedBy = "product")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Where(clause = "is_deleted=0")
+    private List<ProductDetail> productDetails;
 
 }

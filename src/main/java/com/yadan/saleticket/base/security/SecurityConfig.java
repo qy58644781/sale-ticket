@@ -43,7 +43,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", config);
         http.cors().configurationSource(source);
 
-        // 提供给odm member登录用
         final String loginProcessUrl = "/admin/auth/login";
         final String loginPageUrl = "/auth/needLogin";
         final String successUrl = "/auth/success";
@@ -54,9 +53,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .accessDecisionManager(stDecisionManager())
                 .antMatchers(
-                        "/auth/**",
-                        "/app/auth/**",
-                        "/admin/auth/**",
                         "/app/**/open/**",
                         "/admin/**/open/**").permitAll()
                 .antMatchers("/app/**").access("hasRole('ST_APP')")

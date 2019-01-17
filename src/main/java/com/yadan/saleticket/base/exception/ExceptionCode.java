@@ -17,6 +17,7 @@ public enum ExceptionCode {
     INVALID_EXCEL_DATA(2004),
     INVALID_ADD_PRODUCT_VO(2005),
     INVALID_SEAT(2006),
+    INVALID_PRODUCT(2007),
     ;
     private int codeNumber;
 

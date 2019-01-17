@@ -6,11 +6,10 @@ import com.yadan.saleticket.base.tools.ExcelUtils;
 import com.yadan.saleticket.dao.hibernate.HallRepository;
 import com.yadan.saleticket.dao.hibernate.SeatRepository;
 import com.yadan.saleticket.entity.HallSeatsVo;
-import com.yadan.saleticket.model.Theatre.Hall;
-import com.yadan.saleticket.model.Theatre.Seat;
+import com.yadan.saleticket.model.theatre.Hall;
+import com.yadan.saleticket.model.theatre.Seat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -113,8 +112,8 @@ public class HallSeatService {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            this.close(excel);
-            this.close(is);
+            ExcelUtils.close(excel);
+            ExcelUtils.close(is);
         }
     }
 
@@ -149,7 +148,7 @@ public class HallSeatService {
             }
             Cell cell = row.createCell(each.getSeatColumn());
             cell.setCellValue(each.getAreaName());
-            cell.setCellStyle(this.genCellStyle(wb));
+            cell.setCellStyle(ExcelUtils.genCellStyle(wb));
         }
 
         // 设置列宽
@@ -170,7 +169,7 @@ public class HallSeatService {
         Sheet sheet = wb.createSheet("线下导入模板");
         Row keyRow = sheet.createRow(0);
 
-        CellStyle style = this.genCellStyle(wb);
+        CellStyle style = ExcelUtils.genCellStyle(wb);
 
         Cell cell0 = keyRow.createCell(0);
         cell0.setCellValue("区域名称");
@@ -201,42 +200,6 @@ public class HallSeatService {
         }
         sheet.setColumnWidth((short) 5, (short) (75 * 150));
         return wb;
-    }
-
-
-    private void close(Workbook wb) {
-        if (wb != null) {
-            try {
-                wb.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.error(e.getMessage());
-            }
-        }
-    }
-
-    private void close(InputStream is) {
-        if (is != null) {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                log.error(e.getMessage());
-            }
-        }
-    }
-
-    private CellStyle genCellStyle(Workbook wb) {
-        // 设置边框
-        CellStyle style = wb.createCellStyle();
-        style.setBorderLeft(BorderStyle.MEDIUM);
-        style.setBorderRight(BorderStyle.MEDIUM);
-        style.setBorderTop(BorderStyle.MEDIUM);
-        style.setBorderBottom(BorderStyle.MEDIUM);
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
-
-        return style;
     }
 
 }

@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model.Theatre;
+package com.yadan.saleticket.model.theatre;
 
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;

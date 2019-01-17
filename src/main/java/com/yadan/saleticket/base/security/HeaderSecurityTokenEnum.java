@@ -33,6 +33,6 @@ public enum HeaderSecurityTokenEnum {
         else if (Pattern.matches(admin, path))
             return ST_ADMIN;
         else
-            throw new ServiceException(ExceptionCode.SYSTEM, "错误的url");
+            return null;
     }
 }

@@ -1,15 +1,16 @@
 package com.yadan.saleticket.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yadan.saleticket.enums.SexEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 @Entity
 @Getter
@@ -31,6 +32,7 @@ public class User extends BaseModel {
     /**
      * 密码
      */
+    @JsonIgnore
     private String password;
 
     /**

@@ -1,5 +1,6 @@
-package com.yadan.saleticket.model.Theatre;
+package com.yadan.saleticket.model.theatre;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class Seat extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hall_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Hall hall;
 
     /**

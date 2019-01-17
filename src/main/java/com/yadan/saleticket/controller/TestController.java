@@ -8,12 +8,16 @@ import com.yadan.saleticket.model.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class TestController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @RequestMapping("/addUser")
     public void addUser() {
@@ -57,10 +61,4 @@ public class TestController {
         return user;
     }
 
-    public static void main(String[] args) {
-        String site = "{[2,0,0,3],\n" +
-                "[2,0,0,3],\n" +
-                "[2,0,0,3],\n" +
-                "[7]}";
-    }
 }

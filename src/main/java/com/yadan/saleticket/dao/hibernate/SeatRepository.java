@@ -1,8 +1,8 @@
 package com.yadan.saleticket.dao.hibernate;
 
 import com.yadan.saleticket.dao.hibernate.base.ExtJpaRepository;
-import com.yadan.saleticket.model.Theatre.Hall;
-import com.yadan.saleticket.model.Theatre.Seat;
+import com.yadan.saleticket.model.theatre.Hall;
+import com.yadan.saleticket.model.theatre.Seat;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

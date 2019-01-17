@@ -1,19 +1,17 @@
-package com.yadan.saleticket.model.Product;
+package com.yadan.saleticket.model.product;
 
-import com.yadan.saleticket.model.Theatre.Hall;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.model.base.BaseModel;
+import com.yadan.saleticket.model.theatre.Hall;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Audited
 @Entity
 @Getter
 @Setter
@@ -31,14 +29,16 @@ public class ProductDetail extends BaseModel {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "is_deleted=0")
     private Product product;
 
     /**
      * 所属放映厅
      */
-    @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hall_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @Where(clause = "is_deleted=0")
     private Hall hall;
 
     /**
@@ -50,5 +50,9 @@ public class ProductDetail extends BaseModel {
      * 结束时间
      */
     private LocalDateTime endTime;
+
+    @OneToMany(mappedBy = "productDetail")
+    @Where(clause = "is_deleted=0")
+    private List<ProductPrice> productPrices;
 
 }

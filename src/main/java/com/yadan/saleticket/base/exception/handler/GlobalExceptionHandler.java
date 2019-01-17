@@ -44,10 +44,8 @@ public class GlobalExceptionHandler {
         }
 
         if (!(throwable instanceof ServiceException)) {
-            //error.setMessage(messageSourceService.getMessage("defaultError"));
             error.setMessage("服务器错误");
         } else {
-            //error.setMessage(messageSourceService.getMessage(throwable.getMessage()));
             error.setMessage(throwable.getMessage());
         }
         return error;

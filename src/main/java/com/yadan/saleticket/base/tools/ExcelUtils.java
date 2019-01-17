@@ -1,10 +1,15 @@
 package com.yadan.saleticket.base.tools;
 
-import org.apache.poi.ss.usermodel.CellType;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 
+@Slf4j
 public class ExcelUtils {
 
     public static final int INTEGER = 0;
@@ -46,5 +51,40 @@ public class ExcelUtils {
         } else {
             return value;
         }
+    }
+
+    public static void close(Workbook wb) {
+        if (wb != null) {
+            try {
+                wb.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+            }
+        }
+    }
+
+    public static void close(InputStream is) {
+        if (is != null) {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error(e.getMessage());
+            }
+        }
+    }
+
+    public static CellStyle genCellStyle(Workbook wb) {
+        // 设置边框
+        CellStyle style = wb.createCellStyle();
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
+
+        return style;
     }
 }

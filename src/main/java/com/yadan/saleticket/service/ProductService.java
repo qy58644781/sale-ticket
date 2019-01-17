@@ -6,20 +6,20 @@ import com.yadan.saleticket.base.security.SecurityService;
 import com.yadan.saleticket.base.tools.BeanUtils;
 import com.yadan.saleticket.base.tools.ExcelUtils;
 import com.yadan.saleticket.dao.hibernate.*;
-import com.yadan.saleticket.entity.*;
-import com.yadan.saleticket.enums.ApproveStausEnum;
+import com.yadan.saleticket.entity.product.*;
+import com.yadan.saleticket.enums.ApproveStatusEnum;
 import com.yadan.saleticket.enums.TicketTypeEnum;
-import com.yadan.saleticket.model.Product.Product;
-import com.yadan.saleticket.model.Product.ProductDetail;
-import com.yadan.saleticket.model.Product.ProductPrice;
-import com.yadan.saleticket.model.Theatre.Hall;
-import com.yadan.saleticket.model.Theatre.Seat;
+import com.yadan.saleticket.model.product.Product;
+import com.yadan.saleticket.model.product.ProductDetail;
+import com.yadan.saleticket.model.product.ProductPrice;
+import com.yadan.saleticket.model.theatre.Hall;
+import com.yadan.saleticket.model.theatre.Seat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,18 +57,18 @@ public class ProductService {
     @Transactional
     public Product createProduct(AddProductVo addProductVo) {
 
-        if (CollectionUtils.isEmpty(addProductVo.getProductDetails())) {
+        if (CollectionUtils.isEmpty(addProductVo.getAddProductDetailVos())) {
             throw new ServiceException(ExceptionCode.INVALID_ADD_PRODUCT_VO, "必须输入票务明细");
         }
 
         // 新建产品
         Product savedProduct = new Product();
-        savedProduct.setApproveStausEnum(ApproveStausEnum.TBD);
+        savedProduct.setApproveStatusEnum(ApproveStatusEnum.TBD);
         savedProduct.setCreater(securityService.getCurrentLoginUser());
         BeanUtils.copyNotNullProperties(addProductVo, savedProduct);
         productRepository.save(savedProduct);
 
-        for (AddProductDetailVo addProductDetailVo : addProductVo.getProductDetails()) {
+        for (AddProductDetailVo addProductDetailVo : addProductVo.getAddProductDetailVos()) {
             if (CollectionUtils.isEmpty(addProductDetailVo.getStartTimes())) {
                 throw new ServiceException(ExceptionCode.INVALID_ADD_PRODUCT_VO, "必须输入票务场次信息");
             }
@@ -86,6 +86,98 @@ public class ProductService {
         }
 
         return savedProduct;
+    }
+
+    /**
+     * 生成在线的座位价格Excel图
+     *
+     * @param productDetail
+     * @return
+     */
+    public Workbook createProductPriceOnlineExcel(ProductDetail productDetail) {
+        Map<Integer, Row> rowMap = new HashMap();
+        List<ProductPrice> productPrices = productDetail.getProductPrices();
+
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet(productDetail.getProduct().getName());
+
+        int maxColumn = 0;
+        for (ProductPrice productPrice : productPrices) {
+            List<Seat> seats = productPrice.getSeats();
+            for (Seat seat : seats) {
+                Integer seatRow = seat.getSeatRow();
+
+                Row row = rowMap.get(seatRow);
+                if (row == null) {
+                    row = sheet.createRow(seatRow);
+                    rowMap.put(seatRow, row);
+                }
+                if (maxColumn < seat.getSeatColumn()) {
+                    maxColumn = seat.getSeatColumn();
+                }
+
+                String cellValue = "";
+                if (!productPrice.getTicketTypeEnum().equals(TicketTypeEnum.NORMAL)) {
+                    cellValue += productPrice.getTicketTypeEnum().getVal() + ":";
+                }
+                cellValue += productPrice.getPrice();
+
+                Cell cell = row.createCell(seat.getSeatColumn());
+                cell.setCellValue(cellValue);
+                cell.setCellStyle(ExcelUtils.genCellStyle(wb));
+            }
+
+        }
+
+        // 设置列宽
+        for (int i = 0; i < maxColumn; i++) {
+            sheet.setColumnWidth((short) i, (short) (13 * 150));
+        }
+
+        return wb;
+    }
+
+    /**
+     * 生成非在线的座位价格Excel图
+     *
+     * @param productDetail
+     * @return
+     */
+    public Workbook createProductPriceOfflineExcel(ProductDetail productDetail) {
+
+//        List<Seat> seats = seatRepository.findAllByHall(hall);
+//        if (CollectionUtils.isEmpty(seats)) {
+//            throw new ServiceException(ExceptionCode.INVALID_SEAT, "获取剧院座位数据失败");
+//        }
+//        Workbook wb = new XSSFWorkbook();
+//        Sheet sheet = wb.createSheet(hall.getName());
+//
+//        int tempLine = -1;
+//        int maxColumn = 0;
+//        Row row = null;
+//        for (int i = 0; i < seats.size(); i++) {
+//            Seat each = seats.get(i);
+//            log.debug("第" + i + "个座位，x=" + each.getSeatRow() + " y=" + each.getSeatColumn());
+//            if (each.getSeatRow() > tempLine) {
+//                row = sheet.createRow(each.getSeatRow());
+//                tempLine = each.getSeatRow();
+//                log.debug("====开始创建第" + tempLine + "行数据====");
+//            }
+//            if (each.getSeatColumn() > maxColumn) {
+//                maxColumn = each.getSeatColumn();
+//            }
+//            Cell cell = row.createCell(each.getSeatColumn());
+//            cell.setCellValue(each.getAreaName());
+//            cell.setCellStyle(this.genCellStyle(wb));
+//        }
+//
+//        // 设置列宽
+//        for (int i = 0; i < maxColumn; i++) {
+//            sheet.setColumnWidth((short) i, (short) (13 * 150));
+//        }
+//
+//        return wb;
+        return null;
     }
 
 
@@ -179,18 +271,17 @@ public class ProductService {
 
                         Seat seat = seats.get(0);
                         AddSeatPriceVo seatPriceVo = new AddSeatPriceVo();
-                        boolean hasSplit = ((String) value).contains(":") || ((String) value).contains("：");
-                        if (value instanceof String) {
-                            if (hasSplit) {
-                                String[] split = dealContent(value.toString());
-                                seatPriceVo.setTicketTypeEnum(TicketTypeEnum.get(split[0]));
-                                seatPriceVo.setPrice(new BigDecimal(split[1]));
-                            } else {
-                                seatPriceVo.setTicketTypeEnum(TicketTypeEnum.NORMAL);
-                                seatPriceVo.setPrice(new BigDecimal(value.toString()));
-                            }
-                            seatPriceVo.setSeat(seat);
+                        boolean hasSplit = value instanceof String
+                                && (((String) value).contains(":") || ((String) value).contains("："));
+                        if (hasSplit) {
+                            String[] split = dealContent(value.toString());
+                            seatPriceVo.setTicketTypeEnum(TicketTypeEnum.get(split[0]));
+                            seatPriceVo.setPrice(new BigDecimal(split[1]));
+                        } else {
+                            seatPriceVo.setTicketTypeEnum(TicketTypeEnum.NORMAL);
+                            seatPriceVo.setPrice(new BigDecimal(value.toString()));
                         }
+                        seatPriceVo.setSeat(seat);
                         result.add(seatPriceVo);
                     }
                 }

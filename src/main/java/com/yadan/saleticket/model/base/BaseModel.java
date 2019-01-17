@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yadan.saleticket.base.tools.LocalDateTimeDeserializer;
 import com.yadan.saleticket.base.tools.LocalDateTimeSerializer;
-
 import lombok.Getter;
 import lombok.Setter;
 
