@@ -2,6 +2,7 @@ package com.yadan.saleticket.model.product;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yadan.saleticket.enums.ApproveStatusEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import com.yadan.saleticket.model.user.User;
@@ -72,8 +73,8 @@ public class Product extends BaseModel {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creater", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User creater;
 
     /**
@@ -81,8 +82,8 @@ public class Product extends BaseModel {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "updater", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User updater;
 
     /**
@@ -90,13 +91,14 @@ public class Product extends BaseModel {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "approver", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User approver;
 
-    @OneToMany(mappedBy = "product")
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE)
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonManagedReference
     private List<ProductDetail> productDetails;
 
 }

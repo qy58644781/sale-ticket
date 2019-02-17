@@ -1,6 +1,8 @@
 package com.yadan.saleticket.model.product;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yadan.saleticket.model.base.BaseModel;
 import com.yadan.saleticket.model.theatre.Hall;
 import lombok.Getter;
@@ -12,6 +14,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * 场次详情
+ */
 @Entity
 @Getter
 @Setter
@@ -30,6 +35,8 @@ public class ProductDetail extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonBackReference
     private Product product;
 
     /**
@@ -37,8 +44,8 @@ public class ProductDetail extends BaseModel {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hall_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Hall hall;
 
     /**
@@ -51,8 +58,10 @@ public class ProductDetail extends BaseModel {
      */
     private LocalDateTime endTime;
 
-    @OneToMany(mappedBy = "productDetail")
+    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.REMOVE)
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonManagedReference
     private List<ProductPrice> productPrices;
 
 }

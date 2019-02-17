@@ -2,25 +2,22 @@ package com.yadan.saleticket.controller.admin;
 
 import com.yadan.saleticket.base.exception.ExceptionCode;
 import com.yadan.saleticket.base.exception.ServiceException;
+import com.yadan.saleticket.base.http.STResponse;
+import com.yadan.saleticket.base.http.handler.JSONFilter;
 import com.yadan.saleticket.base.security.SecurityService;
-import com.yadan.saleticket.base.tools.Json;
 import com.yadan.saleticket.dao.hibernate.ProductDetailRepository;
 import com.yadan.saleticket.dao.hibernate.ProductPriceRepository;
 import com.yadan.saleticket.dao.hibernate.ProductRepository;
 import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
 import com.yadan.saleticket.entity.PageVo;
 import com.yadan.saleticket.entity.product.AddProductVo;
-import com.yadan.saleticket.entity.product.ProductVo;
 import com.yadan.saleticket.enums.ApproveStatusEnum;
 import com.yadan.saleticket.enums.TicketTypeEnum;
 import com.yadan.saleticket.model.product.Product;
 import com.yadan.saleticket.model.product.ProductDetail;
 import com.yadan.saleticket.service.ProductService;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
@@ -49,38 +46,45 @@ public class AdminProductController {
     @Autowired
     private SecurityService securityService;
 
+    private static final JSONFilter jsonFilter = new JSONFilter(new String[]{
+            "*.approver.nickname",
+            "*.theatre.name",
+            "*.hall.name",
+    }, new String[]{
+            "*.approver.*", "*.creater.*", "*.updater.*",
+            "*.theatre.*",
+            "*.hall.*",
+            "*.productPrices"
+    });
+
     @GetMapping("")
-    public PageVo<ProductVo> products(STPageRequest pageRequest, String filter) {
-        Map<String, String> parse = Json.String2Object(filter, HashMap.class);
-        Page<Product> products;
-        if (MapUtils.isNotEmpty(parse)) {
-            products = productRepository.findAllByFilterAndPageRequest(pageRequest, parse, Product.class);
-        } else {
-            products = productRepository.findAll(pageRequest.genPageRequest());
-        }
-        return new PageVo<>(ProductVo.from(products.getContent()), products.getTotalElements());
+    public STResponse<PageVo> products(STPageRequest pageRequest) {
+        PageVo<Product> products = productRepository.findAllByFilterAndPageRequest(pageRequest);
+        return new STResponse<>(products, jsonFilter);
     }
 
     @GetMapping("/{id}")
-    public ProductVo product(@PathVariable("id") Long id) {
-        return ProductVo.from(productRepository.findOne(id));
+    public STResponse<Product> product(@PathVariable("id") Long id) {
+        return new STResponse<>(productRepository.findOne(id), jsonFilter);
     }
 
     @PostMapping("/merge")
-    public ProductVo merge(@RequestBody AddProductVo vo) {
-        Product product = productService.createProduct(vo);
-        return ProductVo.from(product);
+    public STResponse<Product> merge(@RequestBody AddProductVo vo) {
+        Product product = productService.mergeProduct(vo);
+        // todo 生成redis数据
+        return new STResponse<>(product, jsonFilter);
     }
 
     @PostMapping("/approve")
     public void approve(Long productId) {
         Product product = productRepository.findOne(productId);
-        if(ApproveStatusEnum.pass(product.getApproveStatusEnum())) {
+        if (ApproveStatusEnum.pass(product.getApproveStatusEnum())) {
             product.setApproveStatusEnum(ApproveStatusEnum.UNPASSED);
         } else {
             product.setApproveStatusEnum(ApproveStatusEnum.PASSED);
         }
         product.setApprover(securityService.getCurrentLoginUser());
+        product.setUpdater(securityService.getCurrentLoginUser());
         productRepository.merge(product);
     }
 
@@ -109,10 +113,10 @@ public class AdminProductController {
     public Long deleteProductDetail(Long id) {
         ProductDetail productDetail = productDetailRepository.findOne(id);
         Product product = productDetail.getProduct();
-        if(product.getApproveStatusEnum().equals(ApproveStatusEnum.PASSED)) {
+        if (product.getApproveStatusEnum().equals(ApproveStatusEnum.PASSED)) {
             throw new ServiceException(ExceptionCode.INVALID_PRODUCT, "审核通过的产品无法修改");
         }
-        productDetail.getProductPrices().forEach(each->{
+        productDetail.getProductPrices().forEach(each -> {
             productPriceRepository.delete(each);
         });
         productDetailRepository.delete(productDetail);
@@ -147,6 +151,14 @@ public class AdminProductController {
     @Transactional
     public Set<Long> delete(String ids) {
         Set<Long> result = new HashSet<>();
+        String[] split = ids.split(",");
+        if (split != null && split.length > 0) {
+            for (String id : split) {
+                Product product = productRepository.findOne(Long.valueOf(id));
+                productRepository.delete(product);
+                result.add(Long.valueOf(id));
+            }
+        }
         return result;
     }
 }

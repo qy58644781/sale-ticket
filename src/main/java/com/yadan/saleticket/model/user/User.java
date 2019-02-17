@@ -3,6 +3,7 @@ package com.yadan.saleticket.model.user;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yadan.saleticket.enums.SexEnum;
 import com.yadan.saleticket.model.base.BaseModel;
+import flexjson.JSON;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
@@ -33,6 +34,7 @@ public class User extends BaseModel {
      * 密码
      */
     @JsonIgnore
+    @JSON(include = false)
     private String password;
 
     /**

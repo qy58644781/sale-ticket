@@ -1,10 +1,7 @@
 package com.yadan.saleticket.model.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.yadan.saleticket.base.tools.LocalDateTimeDeserializer;
-import com.yadan.saleticket.base.tools.LocalDateTimeSerializer;
+import flexjson.JSON;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,13 +22,9 @@ public class BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(columnDefinition = "datetime")
     protected LocalDateTime createTime;
 
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @Column(columnDefinition = "datetime")
     protected LocalDateTime updateTime;
 
@@ -39,12 +32,14 @@ public class BaseModel {
      * 是否删除
      */
     @JsonIgnore
+    @JSON(include = false)
     protected Boolean isDeleted = false;
 
     /**
      * 版本
      */
     @JsonIgnore
+    @JSON(include = false)
     protected long version;
 
     @PrePersist

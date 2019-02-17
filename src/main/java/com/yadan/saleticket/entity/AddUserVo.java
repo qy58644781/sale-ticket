@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AddUserVo {
+    private Long id;
     /**
      * 用户昵称
      */

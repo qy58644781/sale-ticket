@@ -20,7 +20,8 @@ public class AuthController {
     }
 
     @RequestMapping("/needLogin")
-    public void needLogin() {
+    public void needLogin(HttpServletResponse response) {
+        response.setStatus(401);
         throw new ServiceException(ExceptionCode.NO_PERMISSION, "token过期或者不存在");
     }
 

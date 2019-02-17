@@ -8,6 +8,9 @@ import java.util.List;
 @Getter
 @Setter
 public class AddProductVo {
+
+    private Long id;
+
     /**
      * 话剧名称
      */

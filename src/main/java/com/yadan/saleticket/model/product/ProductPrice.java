@@ -1,5 +1,7 @@
 package com.yadan.saleticket.model.product;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.enums.TicketTypeEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import com.yadan.saleticket.model.theatre.Seat;
@@ -26,6 +28,8 @@ public class ProductPrice extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_detail_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
     @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonBackReference
     private ProductDetail productDetail;
 
     /**
@@ -59,6 +63,7 @@ public class ProductPrice extends BaseModel {
     @JoinTable(name = "product_price_seat_ref",foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT),
             joinColumns = {@JoinColumn(name = "product_price_id")},
             inverseJoinColumns = {@JoinColumn(name = "seat_id")})
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Seat> seats;
 
     /**

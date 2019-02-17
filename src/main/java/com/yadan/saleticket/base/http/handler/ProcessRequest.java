@@ -2,9 +2,12 @@ package com.yadan.saleticket.base.http.handler;
 
 
 import com.yadan.saleticket.base.http.STRequest;
+import com.yadan.saleticket.base.security.SecurityService;
 import com.yadan.saleticket.base.tools.Ip;
+import com.yadan.saleticket.model.user.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -17,8 +20,8 @@ import java.util.*;
 @Component
 @Slf4j
 public class ProcessRequest {
-//    @Autowired
-//    private SecurityService securityService;
+    @Autowired
+    private SecurityService securityService;
 
     public void clearRequestContext() {
         STRequest.REQUEST_ID.remove();
@@ -47,20 +50,16 @@ public class ProcessRequest {
     public void printLog(HttpServletRequest request, HttpServletResponse response) {
 
         Long timeMillis = (Long) request.getAttribute("startTimeMillis");
-
-//        NhosUser nhosUser = securityService.getCurrentNhosUser();
-//        User STUser = securityService.getCurrentSTUser();
-
+        User user = securityService.getCurrentLoginUser();
         Map map = new LinkedHashMap<>();
         map.put("time", timeMillis);
         map.put("method", request.getMethod());
         map.put("action", request.getRequestURI());
         map.put("locale", LocaleContextHolder.getLocale());
         map.put("cost", System.currentTimeMillis() - timeMillis);
-//        map.put("nhosUserId", nhosUser != null ? nhosUser.getId() : null);
-//        map.put("STUserId", STUser != null ? STUser.getId() : null);
         map.put("user-agent", request.getHeader("user-agent"));
         map.put("header-security-token", request.getHeader("HEADER_SECURITY_TOKEN"));
+        map.put("user", user != null ? user.getId() : null);
         map.put("clientIp", STRequest.REMOTE_IP.get());
         map.put("params", handleParameterMap(request));
         map.put("status", response.getStatus());
@@ -68,6 +67,8 @@ public class ProcessRequest {
 
         // 由于Docker分行处理信息的,需要把换行符转义输出.
         log.info(map.toString().replace("\n", "\\n"));
+
+        // todo mq记录日志到数据库
     }
 
     private Map handleParameterMap(HttpServletRequest request) {

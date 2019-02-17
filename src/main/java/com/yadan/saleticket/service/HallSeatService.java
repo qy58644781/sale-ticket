@@ -2,9 +2,12 @@ package com.yadan.saleticket.service;
 
 import com.yadan.saleticket.base.exception.ExceptionCode;
 import com.yadan.saleticket.base.exception.ServiceException;
+import com.yadan.saleticket.base.tools.BeanUtils;
 import com.yadan.saleticket.base.tools.ExcelUtils;
 import com.yadan.saleticket.dao.hibernate.HallRepository;
 import com.yadan.saleticket.dao.hibernate.SeatRepository;
+import com.yadan.saleticket.dao.hibernate.TheatreRepository;
+import com.yadan.saleticket.entity.AddHallVo;
 import com.yadan.saleticket.entity.HallSeatsVo;
 import com.yadan.saleticket.model.theatre.Hall;
 import com.yadan.saleticket.model.theatre.Seat;
@@ -24,6 +27,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yadan.saleticket.base.exception.ExceptionCode.INVALID_SEAT;
+
 @Service
 @Slf4j
 public class HallSeatService {
@@ -34,6 +39,9 @@ public class HallSeatService {
     @Autowired
     private SeatRepository seatRepository;
 
+    @Autowired
+    private TheatreRepository theatreRepository;
+
     /**
      * 根据剧院座位生成list列表
      *
@@ -43,6 +51,25 @@ public class HallSeatService {
     public HallSeatsVo genHallSeatVo(Long hallId) {
         HallSeatsVo vo = new HallSeatsVo();
         return vo;
+    }
+
+    @Transactional
+    public Hall mergeHall(AddHallVo addHallVo) {
+        if (addHallVo.getId() == null && addHallVo.getSeatFile() == null) {
+            throw new ServiceException(ExceptionCode.INVALID_SEAT, "必须上传座位排位信息");
+        }
+        Hall saveHall;
+        if (addHallVo.getId() != null) {
+            saveHall = hallRepository.findOne(addHallVo.getId());
+        } else {
+            saveHall = new Hall();
+            saveHall.setTheatre(theatreRepository.findOne(addHallVo.getTheatreId()));
+            createSeatByExcel(addHallVo.getSeatFile().getStream(), saveHall);
+        }
+        BeanUtils.copyNotNullProperties(addHallVo, saveHall);
+        hallRepository.merge(saveHall);
+
+        return saveHall;
     }
 
     /**
@@ -86,12 +113,23 @@ public class HallSeatService {
                     XSSFCell cell = row.getCell(j);
 
                     Object value = ExcelUtils.getValue(cell);
+                    if (value == null) {
+                        continue;
+                    }
+                    String[] split = value.toString().split(":");
+                    if (split.length != 3) {
+                        log.error("x: " + i + ", y: " + j + ", val: " + value + "|");
+                        throw new ServiceException(INVALID_SEAT, "excel中座位信息填写有误");
+                    }
+
                     if (value != null) {
                         Seat seat = new Seat();
                         seat.setValid(true);
-                        seat.setAreaName(value.toString());
-                        seat.setSeatColumn(j);
-                        seat.setSeatRow(i);
+                        seat.setAreaName(split[0]);
+                        seat.setSeatRow(Integer.valueOf(split[1]));
+                        seat.setSeatColumn(Integer.valueOf(split[2]));
+                        seat.setSiteRow(i);
+                        seat.setSiteColumn(j);
                         seat.setHall(hall);
                         saveSeats.add(seat);
 
@@ -127,7 +165,7 @@ public class HallSeatService {
 
         List<Seat> seats = seatRepository.findAllByHall(hall);
         if (CollectionUtils.isEmpty(seats)) {
-            throw new ServiceException(ExceptionCode.INVALID_SEAT, "获取剧院座位数据失败");
+            throw new ServiceException(INVALID_SEAT, "获取剧院座位数据失败");
         }
         Workbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet(hall.getName());
@@ -137,17 +175,17 @@ public class HallSeatService {
         Row row = null;
         for (int i = 0; i < seats.size(); i++) {
             Seat each = seats.get(i);
-            log.debug("第" + i + "个座位，x=" + each.getSeatRow() + " y=" + each.getSeatColumn());
-            if (each.getSeatRow() > tempLine) {
-                row = sheet.createRow(each.getSeatRow());
-                tempLine = each.getSeatRow();
+            log.debug("第" + i + "个座位，x=" + each.getSiteRow() + " y=" + each.getSiteColumn());
+            if (each.getSiteRow() > tempLine) {
+                row = sheet.createRow(each.getSiteRow());
+                tempLine = each.getSiteRow();
                 log.debug("====开始创建第" + tempLine + "行数据====");
             }
-            if (each.getSeatColumn() > maxColumn) {
-                maxColumn = each.getSeatColumn();
+            if (each.getSiteColumn() > maxColumn) {
+                maxColumn = each.getSiteColumn();
             }
-            Cell cell = row.createCell(each.getSeatColumn());
-            cell.setCellValue(each.getAreaName());
+            Cell cell = row.createCell(each.getSiteColumn());
+            cell.setCellValue(each.getAreaName() + ":" + each.getSeatRow() + ":" + each.getSeatColumn());
             cell.setCellStyle(ExcelUtils.genCellStyle(wb));
         }
 
@@ -161,6 +199,7 @@ public class HallSeatService {
 
     /**
      * 生成固定的模板
+     *
      * @return
      */
     public Workbook createExcelForOffline() {

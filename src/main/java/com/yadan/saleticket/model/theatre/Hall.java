@@ -1,6 +1,7 @@
 package com.yadan.saleticket.model.theatre;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
@@ -37,6 +38,7 @@ public class Hall extends BaseModel {
     @JoinColumn(name = "theatre_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
     @Where(clause = "is_deleted=0")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonBackReference
     private Theatre theatre;
 
     /**

@@ -31,16 +31,26 @@ public class Seat extends BaseModel {
     /**
      * 对应x轴
      */
-    private Integer seatRow;
+    private Integer siteRow;
 
     /**
      * 对应y轴
      */
-    private Integer seatColumn;
+    private Integer siteColumn;
 
     /**
      * 是否可用
      */
     private Boolean valid;
+
+    /**
+     * 对应座位号X
+     */
+    private Integer seatRow;
+
+    /**
+     * 对应座位号Y
+     */
+    private Integer seatColumn;
 
 }

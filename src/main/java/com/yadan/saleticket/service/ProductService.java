@@ -55,18 +55,25 @@ public class ProductService {
     private SeatRepository seatRepository;
 
     @Transactional
-    public Product createProduct(AddProductVo addProductVo) {
+    public Product mergeProduct(AddProductVo addProductVo) {
 
-        if (CollectionUtils.isEmpty(addProductVo.getAddProductDetailVos())) {
+        if (addProductVo.getId() == null
+                && CollectionUtils.isEmpty(addProductVo.getAddProductDetailVos())) {
             throw new ServiceException(ExceptionCode.INVALID_ADD_PRODUCT_VO, "必须输入票务明细");
         }
 
         // 新建产品
-        Product savedProduct = new Product();
-        savedProduct.setApproveStatusEnum(ApproveStatusEnum.TBD);
-        savedProduct.setCreater(securityService.getCurrentLoginUser());
+        Product savedProduct;
+        if (addProductVo.getId() == null) {
+            savedProduct = new Product();
+            savedProduct.setApproveStatusEnum(ApproveStatusEnum.TBD);
+            savedProduct.setCreater(securityService.getCurrentLoginUser());
+        } else {
+            savedProduct = productRepository.findOne(addProductVo.getId());
+        }
+        savedProduct.setUpdater(securityService.getCurrentLoginUser());
         BeanUtils.copyNotNullProperties(addProductVo, savedProduct);
-        productRepository.save(savedProduct);
+        productRepository.merge(savedProduct);
 
         for (AddProductDetailVo addProductDetailVo : addProductVo.getAddProductDetailVos()) {
             if (CollectionUtils.isEmpty(addProductDetailVo.getStartTimes())) {
@@ -105,15 +112,15 @@ public class ProductService {
         for (ProductPrice productPrice : productPrices) {
             List<Seat> seats = productPrice.getSeats();
             for (Seat seat : seats) {
-                Integer seatRow = seat.getSeatRow();
+                Integer seatRow = seat.getSiteRow();
 
                 Row row = rowMap.get(seatRow);
                 if (row == null) {
                     row = sheet.createRow(seatRow);
                     rowMap.put(seatRow, row);
                 }
-                if (maxColumn < seat.getSeatColumn()) {
-                    maxColumn = seat.getSeatColumn();
+                if (maxColumn < seat.getSiteColumn()) {
+                    maxColumn = seat.getSiteColumn();
                 }
 
                 String cellValue = "";
@@ -122,7 +129,7 @@ public class ProductService {
                 }
                 cellValue += productPrice.getPrice();
 
-                Cell cell = row.createCell(seat.getSeatColumn());
+                Cell cell = row.createCell(seat.getSiteColumn());
                 cell.setCellValue(cellValue);
                 cell.setCellStyle(ExcelUtils.genCellStyle(wb));
             }
@@ -145,39 +152,52 @@ public class ProductService {
      */
     public Workbook createProductPriceOfflineExcel(ProductDetail productDetail) {
 
-//        List<Seat> seats = seatRepository.findAllByHall(hall);
-//        if (CollectionUtils.isEmpty(seats)) {
-//            throw new ServiceException(ExceptionCode.INVALID_SEAT, "获取剧院座位数据失败");
-//        }
-//        Workbook wb = new XSSFWorkbook();
-//        Sheet sheet = wb.createSheet(hall.getName());
-//
-//        int tempLine = -1;
-//        int maxColumn = 0;
-//        Row row = null;
-//        for (int i = 0; i < seats.size(); i++) {
-//            Seat each = seats.get(i);
-//            log.debug("第" + i + "个座位，x=" + each.getSeatRow() + " y=" + each.getSeatColumn());
-//            if (each.getSeatRow() > tempLine) {
-//                row = sheet.createRow(each.getSeatRow());
-//                tempLine = each.getSeatRow();
-//                log.debug("====开始创建第" + tempLine + "行数据====");
-//            }
-//            if (each.getSeatColumn() > maxColumn) {
-//                maxColumn = each.getSeatColumn();
-//            }
-//            Cell cell = row.createCell(each.getSeatColumn());
-//            cell.setCellValue(each.getAreaName());
-//            cell.setCellStyle(this.genCellStyle(wb));
-//        }
-//
-//        // 设置列宽
-//        for (int i = 0; i < maxColumn; i++) {
-//            sheet.setColumnWidth((short) i, (short) (13 * 150));
-//        }
-//
-//        return wb;
-        return null;
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("线下导入模板");
+        Row keyRow = sheet.createRow(0);
+
+        CellStyle style = ExcelUtils.genCellStyle(wb);
+
+        Cell cell0 = keyRow.createCell(0);
+        cell0.setCellValue("区域名称");
+        cell0.setCellStyle(style);
+
+        Cell cell1 = keyRow.createCell(1);
+        cell1.setCellValue("从第几排");
+        cell1.setCellStyle(style);
+
+        Cell cell2 = keyRow.createCell(2);
+        cell2.setCellValue("到第几排");
+        cell2.setCellStyle(style);
+
+        Cell cell3 = keyRow.createCell(3);
+        cell3.setCellValue("价格");
+        cell3.setCellStyle(style);
+
+        Cell cell4 = keyRow.createCell(4);
+        cell4.setCellValue("库存");
+        cell4.setCellStyle(style);
+
+        Cell cell5 = keyRow.createCell(5);
+        cell5.setCellStyle(style);
+        cell5.setCellValue("票类型：普通（不填表示默认）；赠品；员工");
+
+        List<ProductPrice> productPrices = productDetail.getProductPrices();
+        for (int i = 0; i < productPrices.size(); i++) {
+            Row row = sheet.createRow(i + 1);
+            row.createCell(0).setCellValue(productPrices.get(i).getAreaName());
+            row.createCell(1).setCellValue(productPrices.get(i).getSeatFrom());
+            row.createCell(2).setCellValue(productPrices.get(i).getSeatTo());
+            row.createCell(3).setCellValue(productPrices.get(i).getPrice().toString());
+            row.createCell(4).setCellValue(productPrices.get(i).getInventory().toString());
+            row.createCell(5).setCellValue(productPrices.get(i).getTicketTypeEnum().getVal());
+        }
+
+        for (int i = 0; i < 5; i++) {
+            sheet.setColumnWidth((short) i, (short) (25 * 150));
+        }
+        sheet.setColumnWidth((short) 5, (short) (75 * 150));
+        return wb;
     }
 
 
@@ -317,13 +337,13 @@ public class ProductService {
         if (CollectionUtils.isEmpty(seats)) {
             throw new ServiceException(ExceptionCode.INVALID_SEAT, "hallId:" + hall.getId() + " 不存在对应的座位信息");
         }
-        Map<Integer, List<Seat>> seatGroupByRow = seats.stream().collect(Collectors.groupingBy(Seat::getSeatRow));
+        Map<Integer, List<Seat>> seatGroupByRow = seats.stream().collect(Collectors.groupingBy(Seat::getSiteRow));
         for (Map.Entry<Integer, List<Seat>> entry : seatGroupByRow.entrySet()) {
             List<Seat> rowSeats = entry.getValue();
             if (CollectionUtils.isEmpty(rowSeats)) {
                 throw new ServiceException(ExceptionCode.INVALID_SEAT, "hallId:" + hall.getId() + " 不存在对应的座位信息");
             }
-            Map<Integer, List<Seat>> seatVo = rowSeats.stream().collect(Collectors.groupingBy(Seat::getSeatColumn));
+            Map<Integer, List<Seat>> seatVo = rowSeats.stream().collect(Collectors.groupingBy(Seat::getSiteColumn));
             result.put(entry.getKey(), seatVo);
         }
         return result;

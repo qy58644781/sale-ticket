@@ -3,6 +3,7 @@ package com.yadan.saleticket.base.http.handler;
 
 import com.yadan.saleticket.base.http.STRequest;
 import com.yadan.saleticket.base.http.STResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -19,6 +20,9 @@ import java.util.List;
 @Configuration
 @RestControllerAdvice
 public class ResponseHandler extends WebMvcConfigurerAdapter implements ResponseBodyAdvice<Object> {
+
+    @Autowired
+    private MappingJSONHttpMessageConverter mappingJSONHttpMessageConverter;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -42,6 +46,7 @@ public class ResponseHandler extends WebMvcConfigurerAdapter implements Response
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        converters.add(new MappingJackson2HttpMessageConverter());
+//        converters.add(new MappingJackson2HttpMessageConverter());
+        converters.add(mappingJSONHttpMessageConverter);
     }
 }

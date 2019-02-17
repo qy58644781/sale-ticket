@@ -7,7 +7,7 @@
     <groupId>com.yadan</groupId>
     <artifactId>sale-ticket</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>sale-ticket Maven Webapp</name>
     <!-- FIXME change it to the project's website -->
@@ -109,11 +109,6 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>2.9.6</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
-        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -165,8 +160,11 @@
     </dependencies>
 
     <build>
-        <finalName>sale-ticket</finalName>
-        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 </project>

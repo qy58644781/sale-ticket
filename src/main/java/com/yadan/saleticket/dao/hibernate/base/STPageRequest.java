@@ -2,6 +2,7 @@ package com.yadan.saleticket.dao.hibernate.base;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
@@ -12,11 +13,17 @@ public class STPageRequest {
     private Sort.Direction sortOrder;
     private Integer page;
     private Integer count;
-    private String filer;
+    private String filter;
 
     public PageRequest genPageRequest() {
-        return new PageRequest(this.getPage() - 1, this.getCount(),
-                this.getSortOrder(), this.getSortField());
+        if (StringUtils.isEmpty(this.getSortField()) && this.getSortOrder() != null) {
+            return new PageRequest(this.getPage() - 1, this.getCount(), this.getSortOrder());
+        } else if (this.getSortOrder() == null) {
+            return new PageRequest(this.getPage() - 1, this.getCount());
+        } else {
+            return new PageRequest(this.getPage() - 1, this.getCount(),
+                    this.getSortOrder(), this.getSortField());
+        }
     }
 
 }

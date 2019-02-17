@@ -1,5 +1,6 @@
 package com.yadan.saleticket.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.base.security.HeaderSecurityTokenEnum;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;
@@ -25,6 +26,7 @@ public class UserLoginTokenLog extends BaseModel {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
     /**
