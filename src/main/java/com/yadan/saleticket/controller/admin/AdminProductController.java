@@ -9,13 +9,16 @@ import com.yadan.saleticket.dao.hibernate.ProductDetailRepository;
 import com.yadan.saleticket.dao.hibernate.ProductPriceRepository;
 import com.yadan.saleticket.dao.hibernate.ProductRepository;
 import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
+import com.yadan.saleticket.dao.redis.RedisKeyPrefix;
+import com.yadan.saleticket.dao.redis.RedisLock;
 import com.yadan.saleticket.entity.PageVo;
 import com.yadan.saleticket.entity.product.AddProductVo;
 import com.yadan.saleticket.enums.ApproveStatusEnum;
 import com.yadan.saleticket.enums.TicketTypeEnum;
 import com.yadan.saleticket.model.product.Product;
 import com.yadan.saleticket.model.product.ProductDetail;
-import com.yadan.saleticket.service.ProductService;
+import com.yadan.saleticket.service.product.ProductRedisService;
+import com.yadan.saleticket.service.product.ProductService;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,12 @@ public class AdminProductController {
 
     @Autowired
     private ProductPriceRepository productPriceRepository;
+
+    @Autowired
+    private ProductRedisService productRedisService;
+
+    @Autowired
+    private RedisLock redisLock;
 
     @Autowired
     private SecurityService securityService;
@@ -71,23 +80,54 @@ public class AdminProductController {
     @PostMapping("/merge")
     public STResponse<Product> merge(@RequestBody AddProductVo vo) {
         Product product = productService.mergeProduct(vo);
-        // todo 生成redis数据
         return new STResponse<>(product, jsonFilter);
     }
 
-    @PostMapping("/approve")
-    public void approve(Long productId) {
-        Product product = productRepository.findOne(productId);
-        if (ApproveStatusEnum.pass(product.getApproveStatusEnum())) {
-            product.setApproveStatusEnum(ApproveStatusEnum.UNPASSED);
-        } else {
-            product.setApproveStatusEnum(ApproveStatusEnum.PASSED);
+    @PostMapping("/delete")
+    @Transactional
+    public Set<Long> delete(String ids) {
+        Set<Long> result = new HashSet<>();
+        String[] split = ids.split(",");
+        if (split != null && split.length > 0) {
+            for (String id : split) {
+                Product product = productRepository.findOne(Long.valueOf(id));
+                productRepository.delete(product);
+                result.add(Long.valueOf(id));
+            }
         }
-        product.setApprover(securityService.getCurrentLoginUser());
-        product.setUpdater(securityService.getCurrentLoginUser());
-        productRepository.merge(product);
+        return result;
     }
 
+    /**
+     * 审核
+     * @param productId
+     */
+    @PostMapping("/approve")
+    public void approve(Long productId) {
+        redisLock.lock(() -> {
+            Product product = productRepository.findOne(productId);
+            if (ApproveStatusEnum.pass(product.getApproveStatusEnum())) {
+                product.setApproveStatusEnum(ApproveStatusEnum.UNPASSED);
+                productRedisService.removeProductCache(product);
+
+            } else {
+                product.setApproveStatusEnum(ApproveStatusEnum.PASSED);
+                productRedisService.createProductCache(product);
+            }
+            product.setApprover(securityService.getCurrentLoginUser());
+            product.setUpdater(securityService.getCurrentLoginUser());
+            productRepository.merge(product);
+            return null;
+        }, RedisKeyPrefix.LOCK.getPrefix() + RedisKeyPrefix.PRODUCT_DETAIL_KEY.getPrefix() + productId, 200, 100, 1000);
+
+    }
+
+    /**
+     * 导出每个座位的价格
+     * @param productDetailId
+     * @param response
+     * @throws IOException
+     */
     @GetMapping("/exportSeatPriceExcel")
     public void exportSeatPriceExcel(Long productDetailId, HttpServletResponse response) throws IOException {
         ProductDetail productDetail = productDetailRepository.findOne(productDetailId);
@@ -108,6 +148,11 @@ public class AdminProductController {
         response.flushBuffer();
     }
 
+    /**
+     * 删除场次
+     * @param id
+     * @return
+     */
     @PostMapping("/detail/delete")
     @Transactional
     public Long deleteProductDetail(Long id) {
@@ -123,6 +168,10 @@ public class AdminProductController {
         return id;
     }
 
+    /**
+     * 票类型枚举
+     * @return
+     */
     @GetMapping("/ticketTypeEnum")
     public List<Map> hallEnums() {
         List<Map> result = new ArrayList<>();
@@ -135,6 +184,10 @@ public class AdminProductController {
         return result;
     }
 
+    /**
+     * 审核枚举
+     * @return
+     */
     @GetMapping("/approveStatusEnum")
     public List<Map> approveStatusEnum() {
         List<Map> result = new ArrayList<>();
@@ -147,18 +200,5 @@ public class AdminProductController {
         return result;
     }
 
-    @PostMapping("/delete")
-    @Transactional
-    public Set<Long> delete(String ids) {
-        Set<Long> result = new HashSet<>();
-        String[] split = ids.split(",");
-        if (split != null && split.length > 0) {
-            for (String id : split) {
-                Product product = productRepository.findOne(Long.valueOf(id));
-                productRepository.delete(product);
-                result.add(Long.valueOf(id));
-            }
-        }
-        return result;
-    }
+
 }

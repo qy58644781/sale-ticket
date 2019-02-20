@@ -1,4 +1,4 @@
-package com.yadan.saleticket.service;
+package com.yadan.saleticket.service.user;
 
 import com.yadan.saleticket.base.exception.ExceptionCode;
 import com.yadan.saleticket.base.exception.ServiceException;

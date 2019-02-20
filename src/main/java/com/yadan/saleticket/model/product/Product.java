@@ -27,14 +27,17 @@ public class Product extends BaseModel {
 
     private Long id;
 
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
     /**
      * 名称
      */
     private String name;
+
+    /**
+     * 序号
+     *  年月日+创建时候演出当天产品总数+1
+     *  ex：日期2018-02-12 第0012个产品，则序号为 201802120012
+     */
+    private String number;
 
     /**
      * 详情

@@ -1,9 +1,10 @@
-package com.yadan.saleticket.service;
+package com.yadan.saleticket.service.product;
 
 import com.yadan.saleticket.base.exception.ExceptionCode;
 import com.yadan.saleticket.base.exception.ServiceException;
 import com.yadan.saleticket.base.security.SecurityService;
 import com.yadan.saleticket.base.tools.BeanUtils;
+import com.yadan.saleticket.base.tools.DateUtils;
 import com.yadan.saleticket.base.tools.ExcelUtils;
 import com.yadan.saleticket.dao.hibernate.*;
 import com.yadan.saleticket.entity.product.*;
@@ -16,16 +17,19 @@ import com.yadan.saleticket.model.theatre.Hall;
 import com.yadan.saleticket.model.theatre.Seat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +72,7 @@ public class ProductService {
             savedProduct = new Product();
             savedProduct.setApproveStatusEnum(ApproveStatusEnum.TBD);
             savedProduct.setCreater(securityService.getCurrentLoginUser());
+            savedProduct.setNumber(genProductNumber(addProductVo));
         } else {
             savedProduct = productRepository.findOne(addProductVo.getId());
         }
@@ -200,6 +205,28 @@ public class ProductService {
         return wb;
     }
 
+    private String genProductNumber(AddProductVo addProductVo) {
+        LocalDateTime minDate = null;
+        for (AddProductDetailVo addProductDetailVo : addProductVo.getAddProductDetailVos()) {
+            if (CollectionUtils.isEmpty(addProductDetailVo.getStartTimes())) {
+                throw new ServiceException(ExceptionCode.INVALID_ADD_PRODUCT_VO, "必须输入票务场次信息");
+            }
+            for (AddProductTimeVo addProductTimeVo : addProductDetailVo.getStartTimes()) {
+                if (minDate == null || minDate.isAfter(addProductTimeVo.getStartTime())) {
+                    minDate = addProductTimeVo.getStartTime();
+                }
+            }
+        }
+
+        if (minDate == null) {
+            return null;
+        } else {
+            String date = DateUtils.format(minDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            Integer count = productRepository.getCount(date);
+            count++;
+            return DateUtils.format(minDate, DateTimeFormatter.ofPattern("yyyyMMdd")) + StringUtils.leftPad(count.toString(), 4, "0");
+        }
+    }
 
     private ProductDetail createProductDetail(AddProductTimeVo productTimeVo, Product savedProduct, Long hallId) {
         ProductDetail productDetail = new ProductDetail();
@@ -209,6 +236,7 @@ public class ProductService {
         productDetail.setTimes(productTimeVo.getTimes());
         productDetail.setStartTime(productTimeVo.getStartTime());
         productDetail.setEndTime(productTimeVo.getStartTime().plus(savedProduct.getLength(), ChronoUnit.MINUTES));
+        productDetail.setNumber(savedProduct.getNumber() + StringUtils.leftPad(productTimeVo.getTimes().toString(), 2, "0"));
         productDetailRepository.save(productDetail);
         return productDetail;
     }

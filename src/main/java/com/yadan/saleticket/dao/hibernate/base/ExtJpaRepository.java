@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import javax.persistence.EntityManager;
 import java.util.Map;
 
 @NoRepositoryBean
@@ -13,4 +14,6 @@ public interface ExtJpaRepository<T, ID extends Long> extends JpaRepository<T, I
     T merge(T t);
 
     PageVo<T> findAllByFilterAndPageRequest(STPageRequest stPageRequest);
+
+    EntityManager getEntityManager();
 }

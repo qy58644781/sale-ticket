@@ -1,7 +1,7 @@
 package com.yadan.saleticket.base.security;
 
 import com.yadan.saleticket.model.user.User;
-import com.yadan.saleticket.service.UserLoginTokenLogService;
+import com.yadan.saleticket.service.user.UserLoginTokenLogService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

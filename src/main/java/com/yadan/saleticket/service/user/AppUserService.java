@@ -1,4 +1,4 @@
-package com.yadan.saleticket.service;
+package com.yadan.saleticket.service.user;
 
 import com.yadan.saleticket.dao.hibernate.UserRepository;
 import com.yadan.saleticket.enums.SexEnum;

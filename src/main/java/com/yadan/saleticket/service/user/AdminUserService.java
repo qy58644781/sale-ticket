@@ -1,4 +1,4 @@
-package com.yadan.saleticket.service;
+package com.yadan.saleticket.service.user;
 
 import org.springframework.stereotype.Service;
 

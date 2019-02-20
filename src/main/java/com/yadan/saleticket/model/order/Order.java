@@ -1,21 +1,26 @@
 package com.yadan.saleticket.model.order;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yadan.saleticket.enums.OrderStatusEnum;
 import com.yadan.saleticket.model.base.BaseModel;
+import com.yadan.saleticket.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 订单
  */
+//@Audited
 @Entity
 @Getter
 @Setter
@@ -37,7 +42,7 @@ public class Order extends BaseModel {
     /**
      * 购票数量
      */
-    private BigDecimal quantity;
+    private Integer quantity;
 
     /**
      * 原价
@@ -50,7 +55,26 @@ public class Order extends BaseModel {
     private BigDecimal price;
 
     /**
-     * 订单购买人
+     * 订单所属用户
      */
-    private Long userId;
+//    @NotAudited
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "is_deleted=0")
+    private User user;
+
+    /**
+     * 下单人
+     */
+//    @NotAudited
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creater", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "is_deleted=0")
+    private User creater;
+
+    @OneToMany(mappedBy = "order")
+//    @Where(clause = "is_deleted=0")
+//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+//    @JsonManagedReference
+    private List<Ticket> tickets;
 }

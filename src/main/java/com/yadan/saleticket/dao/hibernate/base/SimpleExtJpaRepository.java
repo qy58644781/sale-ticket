@@ -39,6 +39,10 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
     private final PersistenceProvider provider;
     private CrudMethodMetadata metadata;
 
+    @Override
+    public EntityManager getEntityManager() {
+        return em;
+    }
 
     public SimpleExtJpaRepository(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {
         super(entityInformation, entityManager);

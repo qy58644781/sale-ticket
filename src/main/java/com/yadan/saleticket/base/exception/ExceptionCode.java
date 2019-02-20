@@ -18,6 +18,7 @@ public enum ExceptionCode {
     INVALID_ADD_PRODUCT_VO(2005),
     INVALID_SEAT(2006),
     INVALID_PRODUCT(2007),
+    INVALID_CREATE_ORDER(2008),
     ;
     private int codeNumber;
 

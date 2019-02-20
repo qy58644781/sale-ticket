@@ -1,22 +1,25 @@
 package com.yadan.saleticket.model.order;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.enums.TicketStatusEnum;
 import com.yadan.saleticket.enums.TicketTypeEnum;
 import com.yadan.saleticket.model.base.BaseModel;
+import com.yadan.saleticket.model.product.Product;
+import com.yadan.saleticket.model.product.ProductPrice;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Audited
+//@Audited
 @Entity
 @Getter
 @Setter
@@ -30,10 +33,15 @@ public class Ticket extends BaseModel {
     private String number;
 
     /**
-     * 票状态
+     * 票状态（待设计：维度 是否已经打印？）
      */
     @Enumerated(EnumType.STRING)
     private TicketStatusEnum ticketStatusEnum;
+
+    /**
+     * 原价
+     */
+    private BigDecimal originPrice;
 
     /**
      * 价格
@@ -61,15 +69,23 @@ public class Ticket extends BaseModel {
     private Integer seatColumn;
 
     /**
-     * 产品价格外键
+     * 产品价格Id
      */
-    private Long productPriceId;
+//    @NotAudited
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_price_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private ProductPrice productPrice;
 
     /**
-     * 产品外键
+     * 所属订单Id
      */
-    private Long productId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
+    @Where(clause = "is_deleted=0")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonBackReference
+    private Order order;
 
-    @Enumerated(EnumType.STRING)
-    private TicketTypeEnum ticketTypeEnum;
 }

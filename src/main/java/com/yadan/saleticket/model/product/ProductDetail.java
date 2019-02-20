@@ -30,6 +30,12 @@ public class ProductDetail extends BaseModel {
     private Integer times;
 
     /**
+     * 序号（产品序号+演出场次）
+     * ex： 20180212001201
+     */
+    private String number;
+
+    /**
      * 所属产品Id
      */
     @ManyToOne(fetch = FetchType.LAZY)
