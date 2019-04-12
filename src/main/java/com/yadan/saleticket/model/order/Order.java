@@ -73,6 +73,7 @@ public class Order extends BaseModel {
     private User creater;
 
     @OneToMany(mappedBy = "order")
+    @org.hibernate.annotations.ForeignKey(name = "none")
 //    @Where(clause = "is_deleted=0")
 //    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 //    @JsonManagedReference

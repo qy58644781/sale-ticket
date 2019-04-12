@@ -26,7 +26,7 @@ public class ResponseHandler extends WebMvcConfigurerAdapter implements Response
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        return returnType.getMethod().getDeclaringClass().getPackage().getName().contains("com.yadan");
     }
 
     @Override

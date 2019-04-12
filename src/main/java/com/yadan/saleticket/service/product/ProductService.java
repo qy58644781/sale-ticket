@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -425,7 +424,7 @@ public class ProductService {
                 productPrice.setAreaName((String) ExcelUtils.getValue(row.getCell(0), ExcelUtils.STRING));
                 productPrice.setSeatFrom((Integer) ExcelUtils.getValue(row.getCell(1), ExcelUtils.INTEGER));
                 productPrice.setSeatTo((Integer) ExcelUtils.getValue(row.getCell(2), ExcelUtils.INTEGER));
-                productPrice.setPrice((BigDecimal) ExcelUtils.getValue(row.getCell(3), ExcelUtils.DECEMAL));
+                productPrice.setPrice((BigDecimal) ExcelUtils.getValue(row.getCell(3), ExcelUtils.DECIMAL));
                 productPrice.setInventory((Integer) ExcelUtils.getValue(row.getCell(4), ExcelUtils.INTEGER));
                 Object value = ExcelUtils.getValue(row.getCell(5));
                 if (null == value) {

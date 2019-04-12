@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 public class ProductSeatCacheVo implements Serializable {
     private Long seatId;
 
+    private Long productPriceId;
+
     /**
      * 是否售出
      */

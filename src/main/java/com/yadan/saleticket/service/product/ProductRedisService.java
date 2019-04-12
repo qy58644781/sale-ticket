@@ -35,6 +35,7 @@ public class ProductRedisService {
                 pp.getSeats().stream().forEach(seat -> {
                     ProductSeatCacheVo cacheVo = new ProductSeatCacheVo();
                     cacheVo.setSeatId(seat.getId());
+                    cacheVo.setProductPriceId(pp.getId());
                     cacheVo.setSell(false);
                     cacheVo.setPrice(pp.getPrice());
                     cacheVo.setSeatColumn(seat.getSeatColumn());

@@ -14,7 +14,7 @@ public class ExcelUtils {
 
     public static final int INTEGER = 0;
     public static final int STRING = 1;
-    public static final int DECEMAL = 2;
+    public static final int DECIMAL = 2;
 
     public static Object getValue(XSSFCell cell) {
         if (cell == null) return null;
@@ -46,7 +46,7 @@ public class ExcelUtils {
                 value = value.toString().split("\\.")[0];
             }
             return Integer.valueOf(value.toString());
-        } else if (type == ExcelUtils.DECEMAL) {
+        } else if (type == ExcelUtils.DECIMAL) {
             return new BigDecimal(value.toString());
         } else {
             return value;

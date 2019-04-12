@@ -30,10 +30,12 @@ public class InterceptRequest extends WebMvcConfigurerAdapter {
         return new HandlerInterceptorAdapter() {
 
             public boolean isSupport(Object handler) {
-                if (((HandlerMethod) handler).getBean() instanceof BasicErrorController) {
-                    return false;
+                if (handler instanceof HandlerMethod
+                        && ((HandlerMethod)handler).getBean().getClass().getPackage().getName()
+                        .contains("com.yadan")) {
+                    return true;
                 }
-                return true;
+                return false;
             }
 
             @Override

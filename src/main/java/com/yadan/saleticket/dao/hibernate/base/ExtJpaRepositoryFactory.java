@@ -26,6 +26,7 @@ public class ExtJpaRepositoryFactory<T, I extends Serializable> extends JpaRepos
         return getTargetRepositoryViaReflection(information, entityInformation, entityManager);
     }
 
+
     @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
         if (isQueryDslExecutor(metadata.getRepositoryInterface())) {
