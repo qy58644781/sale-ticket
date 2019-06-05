@@ -8,7 +8,6 @@ import com.yadan.saleticket.dao.hibernate.HallRepository;
 import com.yadan.saleticket.dao.hibernate.TheatreRepository;
 import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
 import com.yadan.saleticket.entity.AddHallVo;
-import com.yadan.saleticket.entity.PageVo;
 import com.yadan.saleticket.model.theatre.Hall;
 import com.yadan.saleticket.service.HallSeatService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -45,9 +44,9 @@ public class AdminHallController {
 
     @GetMapping("")
     public STResponse<Hall> halls(STPageRequest pageRequest) {
-        PageVo<Hall> halls = hallRepository.findAllByFilterAndPageRequest(pageRequest);
-        return new STResponse(halls, jsonFilter);
-
+//        PageVo<Hall> halls = hallRepository.findAllByFilterAndPageRequest(pageRequest);
+//        return new STResponse(halls, jsonFilter);
+        return null;
     }
 
     @PostMapping("/merge")
@@ -58,7 +57,7 @@ public class AdminHallController {
 
     @GetMapping("/{id}")
     public STResponse<Hall> hall(@PathVariable("id") Long id) {
-        return new STResponse<>(hallRepository.findOne(id), jsonFilter);
+        return new STResponse<>(hallRepository.getOne(id), jsonFilter);
     }
 
 
@@ -87,7 +86,7 @@ public class AdminHallController {
      */
     @GetMapping("/exportHallExcel")
     public void exportHallExcel(Long hallId, Boolean onlineSale, HttpServletResponse response) throws IOException {
-        Hall hall = hallRepository.findOne(hallId);
+        Hall hall = hallRepository.getOne(hallId);
         if (onlineSale == null) {
             throw new ServiceException(ExceptionCode.INVALID_EXCEL_DATA, "exportHallExcel的导出类型为空");
         }

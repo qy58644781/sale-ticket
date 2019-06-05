@@ -3,7 +3,6 @@ package com.yadan.saleticket.base.security;
 import com.yadan.saleticket.dao.hibernate.UserRepository;
 import com.yadan.saleticket.model.user.User;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +26,7 @@ import static com.yadan.saleticket.base.security.HeaderSecurityTokenEnum.ST_APP;
 @Component
 @Slf4j
 public class STUserDetailsService implements UserDetailsService {
+
 
     @Autowired
     private HttpServletRequest httpServletRequest;

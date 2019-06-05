@@ -104,15 +104,15 @@ public abstract class AbstractOrderGenerator {
         Order order = new Order();
         String orderNo = DateUtils.format(LocalDateTime.now(), DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + CommonUtils.genRandomNumCode(4);
         order.setOrderNo(orderNo);
-        BigDecimal price = addOrderVo.getAddOrderDetailVos().stream().map(each -> productPriceRepository.findOne(each.getProductPriceId()).getPrice())
+        BigDecimal price = addOrderVo.getAddOrderDetailVos().stream().map(each -> productPriceRepository.getOne(each.getProductPriceId()).getPrice())
                 .reduce(BigDecimal::add).get();
         order.setOriginPrice(price);
         order.setPrice(price);
-        order.setUser(userRepository.findOne(addOrderVo.getUserId()));
+        order.setUser(userRepository.getOne(addOrderVo.getUserId()));
         order.setCreater(securityService.getCurrentLoginUser());
         order.setQuantity(addOrderVo.getAddOrderDetailVos().size());
         this.defineOrder(order);
-        orderRepository.merge(order);
+        orderRepository.save(order);
 
         return order;
     }

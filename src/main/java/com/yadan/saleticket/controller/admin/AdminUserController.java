@@ -26,20 +26,21 @@ public class AdminUserController {
 
     @GetMapping("")
     public PageVo<User> users(STPageRequest pageRequest) {
-        PageVo<User> users = userRepository.findAllByFilterAndPageRequest(pageRequest);
-        return users;
+//        PageVo<User> users = userRepository.findAllByFilterAndPageRequest(pageRequest);
+//        return users;
+        return null;
     }
 
     @GetMapping("/{id}")
     public User user(@PathVariable("id") Long id) {
-        return userRepository.findOne(id);
+        return userRepository.getOne(id);
     }
 
     @PostMapping("/merge")
     public User merge(@RequestBody AddUserVo user) {
-        User saveUser = user.getId() != null ? userRepository.findOne(user.getId()) : new User();
+        User saveUser = user.getId() != null ? userRepository.getOne(user.getId()) : new User();
         BeanUtils.copyNotNullProperties(user, saveUser);
-        return userRepository.merge(saveUser);
+        return userRepository.save(saveUser);
     }
 
     @PostMapping("/delete")
@@ -50,7 +51,7 @@ public class AdminUserController {
         if (ArrayUtils.isNotEmpty(idArr)) {
             for (String id : idArr) {
                 if (StringUtils.isNotEmpty(id)) {
-                    userRepository.delete(Long.valueOf(id));
+                    userRepository.deleteById(Long.valueOf(id));
                     result.add(Long.valueOf(id));
                 }
             }

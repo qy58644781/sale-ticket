@@ -9,6 +9,7 @@ public enum ExceptionCode {
     SERVICE(1004),
     NO_HANDLER(1005),
     JSON_CONVERT_EXCEPTION(1006),
+    REQUEST_PARAM_ERROR(1007),
 
     // 2XXX 业务错误
     MOBILEFORMATERROR(2001),

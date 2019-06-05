@@ -8,7 +8,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface SeatRepository extends ExtJpaRepository<Seat, Long> {
+public interface
+SeatRepository extends ExtJpaRepository<Seat, Long> {
     @Query("select s from Seat s where s.hall=:hall order by s.siteRow,s.siteColumn asc ")
     List<Seat> findAllByHall(@Param("hall") Hall hall);
 

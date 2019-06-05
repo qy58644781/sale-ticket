@@ -40,9 +40,9 @@ public class OnlineOrderGenerator extends AbstractOrderGenerator {
 
     @Override
     protected Ticket createSavedTicket(Order savedOrder, AddOrderDetailVo addOrderDetailVo) {
-        ProductPrice pp = productPriceRepository.findOne(addOrderDetailVo.getProductPriceId());
+        ProductPrice pp = productPriceRepository.getOne(addOrderDetailVo.getProductPriceId());
         ProductDetail pd = pp.getProductDetail();
-        Seat seat = seatRepository.findOne(addOrderDetailVo.getSeatId());
+        Seat seat = seatRepository.getOne(addOrderDetailVo.getSeatId());
         Ticket ticket = new Ticket();
         ticket.setOrder(savedOrder);
         ticket.setStartTime(pd.getStartTime());

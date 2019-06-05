@@ -55,7 +55,7 @@ public class SmsVerifyService {
         }
         smsVerifies.forEach(each -> {
             each.setValid(false);
-            smsVerifyRepository.merge(each);
+            smsVerifyRepository.save(each);
         });
     }
 }

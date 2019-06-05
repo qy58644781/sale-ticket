@@ -1,21 +1,16 @@
 package com.yadan.saleticket.controller.admin;
 
-import com.yadan.saleticket.base.tools.BeanUtils;
 import com.yadan.saleticket.dao.hibernate.OrderRepository;
 import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
-import com.yadan.saleticket.entity.AddUserVo;
 import com.yadan.saleticket.entity.PageVo;
 import com.yadan.saleticket.entity.order.AddOrderVo;
 import com.yadan.saleticket.model.order.Order;
 import com.yadan.saleticket.model.user.User;
 import com.yadan.saleticket.service.order.AdminOrderService;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @RestController
@@ -30,13 +25,14 @@ public class AdminOrderController {
 
     @GetMapping("")
     public PageVo<Order> orders(STPageRequest pageRequest) {
-        PageVo<Order> orders = orderRepository.findAllByFilterAndPageRequest(pageRequest);
-        return orders;
+//        PageVo<Order> orders = orderRepository.findAllByFilterAndPageRequest(pageRequest);
+//        return orders;
+        return null;
     }
 
     @GetMapping("/{id}")
     public Order order(@PathVariable("id") Long id) {
-        return orderRepository.findOne(id);
+        return orderRepository.getOne(id);
     }
 
     @PostMapping("/merge")

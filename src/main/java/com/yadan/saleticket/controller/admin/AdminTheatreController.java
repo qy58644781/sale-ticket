@@ -26,20 +26,21 @@ public class AdminTheatreController {
 
     @GetMapping("")
     public PageVo<Theatre> theatres(STPageRequest pageRequest) {
-        PageVo<Theatre> theatres = theatreRepository.findAllByFilterAndPageRequest(pageRequest);
-        return theatres;
+//        PageVo<Theatre> theatres = theatreRepository.findAllByFilterAndPageRequest(pageRequest);
+//        return theatres;
+        return null;
     }
 
     @GetMapping("/{id}")
     public Theatre theatre(@PathVariable("id") Long id) {
-        return theatreRepository.findOne(id);
+        return theatreRepository.getOne(id);
     }
 
     @PostMapping("/merge")
     public Theatre merge(@RequestBody Theatre theatre) {
-        Theatre saveTheatre = theatre.getId() != null ? theatreRepository.findOne(theatre.getId()) : new Theatre();
+        Theatre saveTheatre = theatre.getId() != null ? theatreRepository.getOne(theatre.getId()) : new Theatre();
         BeanUtils.copyNotNullProperties(theatre, saveTheatre);
-        return theatreRepository.merge(saveTheatre);
+        return theatreRepository.save(saveTheatre);
     }
 
 }

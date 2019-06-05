@@ -73,11 +73,11 @@ public class ProductService {
             savedProduct.setCreater(securityService.getCurrentLoginUser());
             savedProduct.setNumber(genProductNumber(addProductVo));
         } else {
-            savedProduct = productRepository.findOne(addProductVo.getId());
+            savedProduct = productRepository.getOne(addProductVo.getId());
         }
         savedProduct.setUpdater(securityService.getCurrentLoginUser());
         BeanUtils.copyNotNullProperties(addProductVo, savedProduct);
-        productRepository.merge(savedProduct);
+        productRepository.save(savedProduct);
 
         for (AddProductDetailVo addProductDetailVo : addProductVo.getAddProductDetailVos()) {
             if (CollectionUtils.isEmpty(addProductDetailVo.getStartTimes())) {
@@ -230,7 +230,7 @@ public class ProductService {
     private ProductDetail createProductDetail(AddProductTimeVo productTimeVo, Product savedProduct, Long hallId) {
         ProductDetail productDetail = new ProductDetail();
         productDetail.setProduct(savedProduct);
-        Hall hall = hallRepository.findOne(hallId);
+        Hall hall = hallRepository.getOne(hallId);
         productDetail.setHall(hall);
         productDetail.setTimes(productTimeVo.getTimes());
         productDetail.setStartTime(productTimeVo.getStartTime());
@@ -245,7 +245,7 @@ public class ProductService {
         if (addProductDetailVo.getPriceFile() == null) {
             throw new ServiceException(ExceptionCode.INVALID_ADD_PRODUCT_VO, "必须上传票务excel信息");
         }
-        Hall hall = hallRepository.findOne(addProductDetailVo.getHallId());
+        Hall hall = hallRepository.getOne(addProductDetailVo.getHallId());
         List<AddSeatPriceVo> addSeatPriceVoList = createOnlineProductSeatVoByExcelModel(hall, addProductDetailVo.getPriceFile().getStream());
         if (CollectionUtils.isEmpty(addSeatPriceVoList)) {
             throw new ServiceException(ExceptionCode.INVALID_EXCEL_DATA, "导入的excel有问题，导入失败");

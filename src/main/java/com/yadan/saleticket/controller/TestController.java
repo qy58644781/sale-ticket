@@ -25,7 +25,7 @@ public class TestController {
         u.setMobile("123456");
         u.setNickname("nico");
         u.setSexEnum(SexEnum.MALE);
-        userRepository.merge(u);
+        userRepository.save(u);
     }
 
     @RequestMapping("/job/notification")
@@ -50,14 +50,14 @@ public class TestController {
         User user = new User();
         user.setId(3L);
         user.setSexEnum(SexEnum.FEMALE);
-        userRepository.merge(user);
+        userRepository.save(user);
 //        userRepository.dynamicSave(user.getId(), user);
 //        System.out.println(user);
     }
 
     @RequestMapping("/find")
     public User user() {
-        User user = userRepository.findOne(3L);
+        User user = userRepository.getOne(3L);
         return user;
     }
 

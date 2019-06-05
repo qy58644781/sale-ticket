@@ -21,8 +21,6 @@ import java.util.List;
 @RestControllerAdvice
 public class ResponseHandler extends WebMvcConfigurerAdapter implements ResponseBodyAdvice<Object> {
 
-    @Autowired
-    private MappingJSONHttpMessageConverter mappingJSONHttpMessageConverter;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -42,11 +40,5 @@ public class ResponseHandler extends WebMvcConfigurerAdapter implements Response
             return body;
         }
 
-    }
-
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-//        converters.add(new MappingJackson2HttpMessageConverter());
-        converters.add(mappingJSONHttpMessageConverter);
     }
 }

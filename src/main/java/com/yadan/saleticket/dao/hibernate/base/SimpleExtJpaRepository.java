@@ -1,13 +1,11 @@
 package com.yadan.saleticket.dao.hibernate.base;
 
-import com.yadan.saleticket.base.tools.Json;
-import com.yadan.saleticket.entity.PageVo;
+import com.yadan.saleticket.dao.hibernate.base.ExtJpaRepository;
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.FatalBeanException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.provider.PersistenceProvider;
 import org.springframework.data.jpa.repository.support.CrudMethodMetadata;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
@@ -17,17 +15,17 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.Query;
 import javax.persistence.Transient;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 @Slf4j
 public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extends SimpleJpaRepository<T, ID> implements ExtJpaRepository<T, ID> {
@@ -55,77 +53,30 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
         this(JpaEntityInformationSupport.getEntityInformation(domainClass, em), em);
     }
 
-
-    private T findOne(Number id) {
-        if (id == null) {
-            return null;
-        }
-        Class<T> domainType = this.getDomainClass();
-        if (this.metadata == null) {
-            return this.em.find(domainType, id);
-        } else {
-            LockModeType type = this.metadata.getLockModeType();
-            Map<String, Object> hints = this.getQueryHints();
-            return type == null ? this.em.find(domainType, id, hints) : this.em.find(domainType, id, type, hints);
-        }
+    private T findOne(Long id) {
+        Specification<T> specification = new Specification<T>() {
+            @Override
+            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                Predicate condition1 = null;
+                condition1 = criteriaBuilder.equal(root.get("id"), id);
+                query.where(condition1);
+                return null;
+            }
+        };
+        return super.findOne(specification).get();
     }
 
     @Override
-    @Transactional
-    public T merge(T t) {
-        boolean contains = em.contains(t);
-        if (!contains && t.getId() != null && t.getId() > 0) {
-            T o = this.findOne(t.getId());
-            copyProperties(t, o);
-            t = saveAndFlush(o);
+    public <S extends T> S save(S entity) {
+        if (entityInformation.isNew(entity)) {
+            super.save(entity);
+            return entity;
         } else {
-            t = saveAndFlush(t);
+            S old = (S) this.findOne(entity.getId());
+            copyProperties(entity, old);
+            return super.save(old);
         }
-        return t;
     }
-
-    @Override
-    public PageVo<T> findAllByFilterAndPageRequest(STPageRequest stPageRequest) {
-        StringBuilder hql = new StringBuilder("from " + entityInformation.getEntityName() + " c where 1=1 ");
-        Map<String, String> filter = stPageRequest.getFilter() != null ? Json.String2Object(stPageRequest.getFilter(), HashMap.class) : null;
-
-        if (MapUtils.isNotEmpty(filter)) {
-            for (Map.Entry<String, String> entry : filter.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (StringUtils.isNotEmpty(value)) {
-                    hql.append("and c." + key + " like :" + key + " ");
-                }
-            }
-        }
-
-        if (StringUtils.isNotEmpty(stPageRequest.getSortField())
-                && stPageRequest.getSortOrder() != null) {
-            hql.append("order by " + stPageRequest.getSortField() + " " + stPageRequest.getSortOrder() + " ");
-        }
-
-        Query query = em.createQuery("select c " + hql);
-        Query total = em.createQuery("select count(1) " + hql);
-
-        if (MapUtils.isNotEmpty(filter)) {
-            for (Map.Entry<String, String> entry : filter.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (StringUtils.isNotEmpty(value)) {
-                    query.setParameter(key, "%" + value + "%");
-                    total.setParameter(key, "%" + value + "%");
-                }
-            }
-        }
-
-        if (stPageRequest.getPage() != null && stPageRequest.getCount() != null) {
-            query.setFirstResult((stPageRequest.getPage() - 1) * stPageRequest.getCount())
-                    .setMaxResults(stPageRequest.getCount());
-        }
-        return new PageVo<T>(query.getResultList(), (Long) total.getSingleResult());
-
-    }
-
 
     /**
      * 扩展持久方法
@@ -135,7 +86,7 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
     @Transactional
     public void persist(T t, Boolean alwaysCheckIn) {
         if (alwaysCheckIn) makeReference(t);
-        this.merge(t);
+        this.save(t);
     }
 
     /**
@@ -146,7 +97,7 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
     @Transactional
     public T merge(T t, boolean alwaysCheckIn) {
         if (alwaysCheckIn) makeReference(t);
-        return this.merge(t);
+        return this.save(t);
     }
 
     /**
@@ -266,12 +217,5 @@ public class SimpleExtJpaRepository<T extends BaseModel, ID extends Long> extend
             }
         }
     }
-
-//    public <T> T toOriginRevision(Class<T> clazz, Long baseEntityId) {
-//        AuditReader reader = AuditReaderFactory.get(em);
-//        List<Number> list = reader.getRevisions(clazz, baseEntityId);
-//        return reader.find(clazz, baseEntityId, list.get(0));
-//    }
-
 
 }

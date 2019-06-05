@@ -60,14 +60,14 @@ public class HallSeatService {
         }
         Hall saveHall;
         if (addHallVo.getId() != null) {
-            saveHall = hallRepository.findOne(addHallVo.getId());
+            saveHall = hallRepository.getOne(addHallVo.getId());
         } else {
             saveHall = new Hall();
-            saveHall.setTheatre(theatreRepository.findOne(addHallVo.getTheatreId()));
+            saveHall.setTheatre(theatreRepository.getOne(addHallVo.getTheatreId()));
             createSeatByExcel(addHallVo.getSeatFile().getStream(), saveHall);
         }
         BeanUtils.copyNotNullProperties(addHallVo, saveHall);
-        hallRepository.merge(saveHall);
+        hallRepository.save(saveHall);
 
         return saveHall;
     }
@@ -139,11 +139,11 @@ public class HallSeatService {
             }
 
             // 更新座位
-            seatRepository.save(saveSeats);
+            seatRepository.saveAll(saveSeats);
 
             hall.setMaxColumn(maxRow);
             hall.setMaxRow(maxRow);
-            hallRepository.merge(hall);
+            hallRepository.save(hall);
 
             log.debug("导入 hallId: " + hall.getId() + " 的excel座位成功");
 

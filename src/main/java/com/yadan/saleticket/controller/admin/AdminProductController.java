@@ -68,13 +68,14 @@ public class AdminProductController {
 
     @GetMapping("")
     public STResponse<PageVo> products(STPageRequest pageRequest) {
-        PageVo<Product> products = productRepository.findAllByFilterAndPageRequest(pageRequest);
-        return new STResponse<>(products, jsonFilter);
+//        PageVo<Product> products = productRepository.findAllByFilterAndPageRequest(pageRequest);
+//        return new STResponse<>(products, jsonFilter);
+        return null;
     }
 
     @GetMapping("/{id}")
     public STResponse<Product> product(@PathVariable("id") Long id) {
-        return new STResponse<>(productRepository.findOne(id), jsonFilter);
+        return new STResponse<>(productRepository.getOne(id), jsonFilter);
     }
 
     @PostMapping("/merge")
@@ -90,7 +91,7 @@ public class AdminProductController {
         String[] split = ids.split(",");
         if (split != null && split.length > 0) {
             for (String id : split) {
-                Product product = productRepository.findOne(Long.valueOf(id));
+                Product product = productRepository.getOne(Long.valueOf(id));
                 productRepository.delete(product);
                 result.add(Long.valueOf(id));
             }
@@ -105,7 +106,7 @@ public class AdminProductController {
     @PostMapping("/approve")
     public void approve(Long productId) {
         redisLock.lock(() -> {
-            Product product = productRepository.findOne(productId);
+            Product product = productRepository.getOne(productId);
             if (ApproveStatusEnum.pass(product.getApproveStatusEnum())) {
                 product.setApproveStatusEnum(ApproveStatusEnum.UNPASSED);
                 productRedisService.removeProductCache(product);
@@ -116,7 +117,7 @@ public class AdminProductController {
             }
             product.setApprover(securityService.getCurrentLoginUser());
             product.setUpdater(securityService.getCurrentLoginUser());
-            productRepository.merge(product);
+            productRepository.save(product);
             return null;
         }, RedisKeyPrefix.LOCK.getPrefix() + RedisKeyPrefix.PRODUCT_DETAIL_KEY.getPrefix() + productId, 200, 100, 1000);
 
@@ -130,7 +131,7 @@ public class AdminProductController {
      */
     @GetMapping("/exportSeatPriceExcel")
     public void exportSeatPriceExcel(Long productDetailId, HttpServletResponse response) throws IOException {
-        ProductDetail productDetail = productDetailRepository.findOne(productDetailId);
+        ProductDetail productDetail = productDetailRepository.getOne(productDetailId);
         Boolean onlineSale = productDetail.getProduct().getOnlineSale();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         if (onlineSale) {
@@ -156,7 +157,7 @@ public class AdminProductController {
     @PostMapping("/detail/delete")
     @Transactional
     public Long deleteProductDetail(Long id) {
-        ProductDetail productDetail = productDetailRepository.findOne(id);
+        ProductDetail productDetail = productDetailRepository.getOne(id);
         Product product = productDetail.getProduct();
         if (product.getApproveStatusEnum().equals(ApproveStatusEnum.PASSED)) {
             throw new ServiceException(ExceptionCode.INVALID_PRODUCT, "审核通过的产品无法修改");
