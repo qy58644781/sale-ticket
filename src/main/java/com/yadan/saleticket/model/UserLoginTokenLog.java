@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model.user;
+package com.yadan.saleticket.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yadan.saleticket.base.security.HeaderSecurityTokenEnum;

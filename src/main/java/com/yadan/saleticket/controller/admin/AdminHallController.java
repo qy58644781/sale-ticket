@@ -57,7 +57,8 @@ public class AdminHallController {
 
     @GetMapping("/{id}")
     public STResponse<Hall> hall(@PathVariable("id") Long id) {
-        return new STResponse<>(hallRepository.getOne(id), jsonFilter);
+//        return new STResponse<>(hallRepository.getOne(id), jsonFilter);
+        return null;
     }
 
 

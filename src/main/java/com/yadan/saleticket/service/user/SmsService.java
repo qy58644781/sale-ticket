@@ -65,7 +65,7 @@ public class SmsService {
             return success;
         }
         System.out.println(response);
-        throw new ServiceException(ExceptionCode.MOBILEFORMATERROR, "手机号码格式不正确");
+        throw new ServiceException(ExceptionCode.MOBILE_FORMAT_ERROR, "手机号码格式不正确");
     }
 
     private boolean sendSmsUseSubmail(String to, String templateCode, JSONObject JSONObject) {

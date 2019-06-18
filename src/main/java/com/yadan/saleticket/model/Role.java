@@ -1,4 +1,4 @@
-package com.yadan.saleticket.model.user;
+package com.yadan.saleticket.model;
 
 import com.yadan.saleticket.model.base.BaseModel;
 import lombok.Getter;

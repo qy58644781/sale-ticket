@@ -2,7 +2,7 @@ package com.yadan.saleticket.base.security;
 
 import com.yadan.saleticket.base.tools.MD5;
 import com.yadan.saleticket.dao.hibernate.UserRepository;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;

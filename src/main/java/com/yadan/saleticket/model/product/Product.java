@@ -5,14 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.yadan.saleticket.enums.ApproveStatusEnum;
 import com.yadan.saleticket.model.base.BaseModel;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**

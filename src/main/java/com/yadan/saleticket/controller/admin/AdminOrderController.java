@@ -5,7 +5,7 @@ import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
 import com.yadan.saleticket.entity.PageVo;
 import com.yadan.saleticket.entity.order.AddOrderVo;
 import com.yadan.saleticket.model.order.Order;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import com.yadan.saleticket.service.order.AdminOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

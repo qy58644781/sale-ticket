@@ -1,6 +1,6 @@
 package com.yadan.saleticket.base.security;
 
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import com.yadan.saleticket.service.user.UserLoginTokenLogService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,13 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
                 : request.getHeader(HEADER_SECURITY_TOKEN);
     }
 
+    /**
+     * 设置浏览器cookie，这里直接跳过对cookie的操作，仅返回token
+     * @param tokens
+     * @param maxAge
+     * @param request
+     * @param response
+     */
     @Override
     protected void setCookie(String[] tokens, int maxAge, HttpServletRequest request, HttpServletResponse response) {
         String cookieValue = encodeCookie(tokens);
@@ -79,8 +86,7 @@ public class STRememberMeService extends TokenBasedRememberMeServices {
         }
 
         long expiryTime = System.currentTimeMillis();
-//        expiryTime += 1000L * (tokenLifetime < 0 ? TWO_WEEKS_S : tokenLifetime);
-        expiryTime += 1000L * TWO_WEEKS_S;
+        expiryTime += 1000L * (tokenLifetime < 0 ? TWO_WEEKS_S : tokenLifetime);
 
         String signatureValue = makeTokenSignature(expiryTime, username, password);
 

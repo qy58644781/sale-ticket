@@ -4,7 +4,7 @@ package com.yadan.saleticket.base.http.handler;
 import com.yadan.saleticket.base.http.STRequest;
 import com.yadan.saleticket.base.security.SecurityService;
 import com.yadan.saleticket.base.tools.Ip;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

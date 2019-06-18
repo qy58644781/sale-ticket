@@ -1,7 +1,7 @@
 package com.yadan.saleticket.dao.hibernate;
 
 import com.yadan.saleticket.dao.hibernate.base.ExtJpaRepository;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

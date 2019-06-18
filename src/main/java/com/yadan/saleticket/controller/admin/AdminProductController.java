@@ -75,13 +75,15 @@ public class AdminProductController {
 
     @GetMapping("/{id}")
     public STResponse<Product> product(@PathVariable("id") Long id) {
-        return new STResponse<>(productRepository.getOne(id), jsonFilter);
+//        return new STResponse<>(productRepository.getOne(id), jsonFilter);
+        return null;
     }
 
     @PostMapping("/merge")
     public STResponse<Product> merge(@RequestBody AddProductVo vo) {
         Product product = productService.mergeProduct(vo);
-        return new STResponse<>(product, jsonFilter);
+//        return new STResponse<>(product, jsonFilter);
+        return null;
     }
 
     @PostMapping("/delete")

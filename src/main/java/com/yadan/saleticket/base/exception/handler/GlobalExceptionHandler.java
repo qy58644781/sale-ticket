@@ -10,6 +10,7 @@ import com.yadan.saleticket.base.http.STRequest;
 import com.yadan.saleticket.base.http.STResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,6 +41,7 @@ public class GlobalExceptionHandler {
     private ResponseError getError(Throwable throwable) {
         ResponseError error = new ResponseError();
         error.setCode(ExceptionCode.SYSTEM.getCodeNumber());
+        error.setMessage(throwable.getMessage());
 
         if (throwable instanceof GlobalException) {
             error.setCode(((GlobalException) throwable).getCode().getCodeNumber());
@@ -53,7 +55,9 @@ public class GlobalExceptionHandler {
         } else if (throwable instanceof MethodArgumentNotValidException) {
             MethodArgumentNotValidException exs = (MethodArgumentNotValidException) throwable;
             List<ObjectError> errList = exs.getBindingResult().getAllErrors();
-            List<String> errMsgs = errList.stream().map(ObjectError::getDefaultMessage).collect(Collectors.toList());
+            List<String> errMsgs = errList.stream().map(each->{
+                return ((FieldError) each).getField() + each.getDefaultMessage();
+            }).collect(Collectors.toList());
             error.setMessage(String.format("参数校验失败: %s", Joiner.on(", ").skipNulls().join(errMsgs)));
             error.setCode(ExceptionCode.REQUEST_PARAM_ERROR.getCodeNumber());
         }

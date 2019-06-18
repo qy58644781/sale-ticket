@@ -16,6 +16,11 @@ public enum HeaderSecurityTokenEnum {
     ST_APP,
 
     /**
+     * 微信小程序
+     */
+    ST_WX,
+
+    /**
      * 后台管理员
      */
     ST_ADMIN;
@@ -26,13 +31,18 @@ public enum HeaderSecurityTokenEnum {
             throw new ServiceException(ExceptionCode.SYSTEM, "错误的url");
 
         final String app = "^/app/.+$";
+        final String wx = "^/wx/.+$";
         final String admin = "^/admin/.+$";
 
-        if (Pattern.matches(app, path))
+        if (Pattern.matches(app, path)) {
             return ST_APP;
-        else if (Pattern.matches(admin, path))
+        } else if (Pattern.matches(wx, path)) {
+            return ST_WX;
+        } else if (Pattern.matches(admin, path)) {
             return ST_ADMIN;
-        else
+        } else {
             return null;
+        }
+
     }
 }

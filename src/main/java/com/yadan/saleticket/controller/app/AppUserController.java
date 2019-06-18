@@ -2,7 +2,7 @@ package com.yadan.saleticket.controller.app;
 
 import com.yadan.saleticket.dao.hibernate.UserRepository;
 import com.yadan.saleticket.enums.SexEnum;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/app/user")
 public class AppUserController {
 
     @Autowired
     private UserRepository userRepository;
+
 
     @GetMapping("/open/users")
     public Page<User> openUsers(Integer page, Integer count) {

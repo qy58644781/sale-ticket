@@ -7,7 +7,7 @@ import com.yadan.saleticket.dao.hibernate.base.STPageRequest;
 import com.yadan.saleticket.entity.AddUserVo;
 import com.yadan.saleticket.entity.PageVo;
 import com.yadan.saleticket.enums.SexEnum;
-import com.yadan.saleticket.model.user.User;
+import com.yadan.saleticket.model.User;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
