@@ -55,7 +55,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(
                         "/app/**/open/**",
                         "/wx/**/open/**",
-                        "/admin/**/open/**").permitAll()
+                        "/admin/**/open/**",
+                        "/common/**"
+                        ).permitAll()
                 .antMatchers("/app/**").access("hasRole('ST_APP')")
                 .antMatchers("/wx/**").access("hasRole('ST_WX')")
                 .antMatchers("/admin/**").access("hasRole('ST_ADMIN')")

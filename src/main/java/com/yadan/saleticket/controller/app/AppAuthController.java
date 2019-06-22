@@ -6,9 +6,13 @@ import com.yadan.saleticket.base.security.STRememberMeService;
 import com.yadan.saleticket.base.tools.MD5;
 import com.yadan.saleticket.dao.hibernate.MemberRepository;
 import com.yadan.saleticket.entity.*;
+import com.yadan.saleticket.entity.app.AppLoginByPsdReqVO;
+import com.yadan.saleticket.entity.app.AppLoginBySmsReqVO;
+import com.yadan.saleticket.entity.app.AppMemberVO;
+import com.yadan.saleticket.entity.app.AppRegisterReqVO;
 import com.yadan.saleticket.model.Member;
-import com.yadan.saleticket.service.user.AppMemberService;
-import com.yadan.saleticket.service.user.SmsVerifyService;
+import com.yadan.saleticket.service.MemberService;
+import com.yadan.saleticket.service.SmsVerifyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +35,7 @@ public class AppAuthController {
     private SmsVerifyService smsVerifyService;
 
     @Autowired
-    private AppMemberService appMemberService;
+    private MemberService memberService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -41,8 +45,8 @@ public class AppAuthController {
 
     @ApiOperation("发送短信验证码")
     @PostMapping("/sendSms")
-    public String sendSms(@Valid @RequestBody AppSendSmsReqVO appSendSmsReqVO) {
-        String code = smsVerifyService.sendSmsVerify(appSendSmsReqVO.getMobile());
+    public String sendSms(@Valid @RequestBody SendSmsReqVO sendSmsReqVO) {
+        String code = smsVerifyService.sendSmsVerify(sendSmsReqVO.getMobile());
         return code;
     }
 
@@ -52,28 +56,28 @@ public class AppAuthController {
                                 @ApiIgnore HttpServletResponse response,
                                 @Valid @RequestBody AppRegisterReqVO appRegisterReqVO) {
         smsVerifyService.validSmsVerify(appRegisterReqVO.getMobile(), appRegisterReqVO.getCode());
-        Member member = appMemberService.register(appRegisterReqVO.getMobile(), appRegisterReqVO.getMobile());
+        Member member = memberService.register(appRegisterReqVO.getMobile(), appRegisterReqVO.getMobile());
         stRememberMeService.createToken(request, response, member, -1);
-        return appMemberService.from(member);
+        return memberService.from(member);
     }
 
     @ApiOperation("账号密码登录")
     @PostMapping("/loginByPassword")
-    public AppMemberVO login(HttpServletRequest request,
-                             HttpServletResponse response,
+    public AppMemberVO loginByPassword(@ApiIgnore HttpServletRequest request,
+                             @ApiIgnore HttpServletResponse response,
                              @Valid @RequestBody AppLoginByPsdReqVO appLoginByPsdReqVO) {
         Member member = memberRepository.findMemberByMobileAndPassword(appLoginByPsdReqVO.getMobile(), MD5.MD5Encode(appLoginByPsdReqVO.getPassword()));
         if (member == null) {
             throw new ServiceException(ExceptionCode.INVALID_USER, "用户手机号不存在或者密码错误");
         }
         stRememberMeService.createToken(request, response, member, -1);
-        return appMemberService.from(member);
+        return memberService.from(member);
     }
 
     @ApiOperation("短信登录")
     @PostMapping("/loginBySms")
-    public AppMemberVO loginBySms(HttpServletRequest request,
-                                  HttpServletResponse response,
+    public AppMemberVO loginBySms(@ApiIgnore HttpServletRequest request,
+                                  @ApiIgnore HttpServletResponse response,
                                   @Valid @RequestBody AppLoginBySmsReqVO appLoginBySmsReqVO) {
         smsVerifyService.validSmsVerify(appLoginBySmsReqVO.getMobile(), appLoginBySmsReqVO.getCode());
         Member member = memberRepository.findMemberByMobile(appLoginBySmsReqVO.getMobile());
@@ -81,7 +85,7 @@ public class AppAuthController {
             throw new ServiceException(ExceptionCode.INVALID_USER, "用户手机号不存在");
         }
         stRememberMeService.createToken(request, response, member, -1);
-        return appMemberService.from(member);
+        return memberService.from(member);
     }
 
 

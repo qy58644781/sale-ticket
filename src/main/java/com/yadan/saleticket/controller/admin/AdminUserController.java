@@ -59,16 +59,4 @@ public class AdminUserController {
         return result;
     }
 
-    @GetMapping("/sexEnums")
-    public List<Map> hallEnums() {
-        List<Map> result = new ArrayList<>();
-        for (SexEnum each : SexEnum.values()) {
-            Map map = new HashMap();
-            map.put("id", each);
-            map.put("name", each.getVal());
-            result.add(map);
-        }
-        return result;
-    }
-
 }

@@ -19,9 +19,14 @@ import javax.persistence.*;
 @Where(clause = "is_deleted=0")
 @SQLDelete(sql = "update yd_st_area set is_deleted=1,update_time=now() where id=?")
 public class Area extends BaseModel {
-    private String name;
+
+    private String region_name;
 
     private String shortName;
+
+    private String pinyinName;
+
+    private String pinyinShortName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "", value = ConstraintMode.NO_CONSTRAINT))
@@ -33,4 +38,9 @@ public class Area extends BaseModel {
     private AreaLevelEnum areaLevelEnum;
 
     private String phoneCode;
+
+    /**
+     * 邮编
+     */
+    private String postCode;
 }
