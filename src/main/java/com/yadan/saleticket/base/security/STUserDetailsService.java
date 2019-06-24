@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.yadan.saleticket.base.security.HeaderSecurityTokenEnum.ST_ADMIN;
 import static com.yadan.saleticket.base.security.HeaderSecurityTokenEnum.ST_APP;
+import static com.yadan.saleticket.base.security.HeaderSecurityTokenEnum.ST_WX;
 
 
 /**
@@ -71,6 +72,8 @@ public class STUserDetailsService implements UserDetailsService {
             return Arrays.asList(new SimpleGrantedAuthority("ST_APP"));
         } else if (ST_ADMIN.equals(headerSecurityTokenEnum)) {
             return Arrays.asList(new SimpleGrantedAuthority("ST_ADMIN"));
+        } else if (ST_WX.equals(headerSecurityTokenEnum)) {
+            return Arrays.asList(new SimpleGrantedAuthority("ST_WX"));
         } else {
             return null;
         }
